@@ -83,30 +83,27 @@ function spinCube(): void {
 <style scoped>
 .background {
   position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: black;
+  align-items: center;
+  background: #000;
   filter: invert(1);
 }
 
 .background-side {
   position: absolute;
-  width: 16px;
-  height: 20px;
-  color: white;
-  font-size: 26px;
-  font-family: sans-serif;
   justify-content: center;
   align-items: center;
-  transition: all 0.7s;
-  mix-blend-mode: screen;
+  width: 16px;
+  height: 20px;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 26px;
   background: #165d7987;
   transform: perspective(1px) rotate3d(1, 1.5, 0, 10deg);
+  transition: all 0.7s;
+  mix-blend-mode: screen;
   filter: blur(2px);
 
   &.active {
@@ -134,8 +131,8 @@ function spinCube(): void {
 
 .cube-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100%;
   perspective: 1000px;
 }
@@ -144,11 +141,11 @@ function spinCube(): void {
   position: relative;
   width: 500px;
   height: 500px;
-  transform-style: preserve-3d;
-  transition: transform 0.7s;
   transform: translateZ(-250px);
+  transition: transform 0.7s;
   cursor: pointer;
   user-select: none;
+  transform-style: preserve-3d;
 
   &[data-side="back"] {
     transform: translateZ(-250px) rotateY(-180deg) rotateZ(90deg);
@@ -173,43 +170,43 @@ function spinCube(): void {
 
 .side {
   position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #fff;
   font-size: 45px;
-  color: white;
-  background-color: black;
+  background-color: #000;
 
   &.front {
-    transform: translateZ(250px);
     background: #3973cc;
+    transform: translateZ(250px);
   }
 
   &.back {
-    transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
     background: #e05a5a;
+    transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.left {
-    transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
     background: #e09c36;
+    transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
   }
 
   &.right {
-    transform: rotateY(90deg) rotateZ(-90deg) translateZ(250px);
     background: #36b374;
+    transform: rotateY(90deg) rotateZ(-90deg) translateZ(250px);
   }
 
   &.top {
-    transform: rotateX(90deg) rotateZ(90deg) translateZ(250px);
     background: #36b0c2;
+    transform: rotateX(90deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.bottom {
-    transform: rotateX(-90deg) rotateZ(180deg) translateZ(250px);
     background: #9b6bc2;
+    transform: rotateX(-90deg) rotateZ(180deg) translateZ(250px);
   }
 }
 </style>

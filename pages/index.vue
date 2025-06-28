@@ -10,11 +10,11 @@ import TheCube from '#shared/ui/TheCube.vue';
 
 <style scoped>
 .main-page {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   background: #f7f7fa;
 }
 </style>
