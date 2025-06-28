@@ -53,6 +53,7 @@ export default withNuxt([
       'no-debugger': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
+      'curly': ['error', 'all'],
 
       // Vue strictness
       'vue/no-v-html': 'error',
@@ -66,10 +67,44 @@ export default withNuxt([
       // Vue style rules
       'vue/html-indent': ['error', 2],
       'vue/max-attributes-per-line': ['error', { singleline: 3, multiline: 1 }],
-      'vue/html-self-closing': ['error', { html: { void: 'never', normal: 'always', component: 'always' } }],
+      'vue/html-self-closing': ['error', { html: { void: 'always', normal: 'always', component: 'always' } }],
+      'vue/html-closing-bracket-spacing': ['error', {
+        startTag: 'never',
+        endTag: 'never',
+        selfClosingTag: 'always',
+      }],
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
       'vue/attribute-hyphenation': ['error', 'always'],
       'vue/v-on-event-hyphenation': ['error', 'always'],
+      'vue/object-curly-spacing': ['error', 'always'], // Обязательные пробелы в Vue template фигурных скобках
+      'vue/mustache-interpolation-spacing': ['error', 'always'], // Обязательные пробелы в {{ }} интерполяции
+      'vue/attributes-order': ['error', {
+        order: [
+          'DEFINITION',       // is, v-is
+          'LIST_RENDERING',   // v-for
+          'CONDITIONALS',     // v-if, v-else-if, v-else, v-show, v-cloak
+          'RENDER_MODIFIERS', // v-pre, v-once
+          'GLOBAL',           // id
+          'UNIQUE',           // ref, key
+          'TWO_WAY_BINDING',  // v-model
+          'OTHER_DIRECTIVES', // v-custom-directive
+          'OTHER_ATTR',       // custom props, class, style
+          'EVENTS',           // @click, @input
+        ],
+        alphabetical: false,
+      }],
+      'vue/first-attribute-linebreak': ['error', {
+        singleline: 'ignore',
+        multiline: 'below',
+      }],
+      'vue/html-closing-bracket-newline': ['error', {
+        singleline: 'never',
+        multiline: 'always',
+      }],
+      'vue/multiline-html-element-content-newline': ['error', {
+        ignoreWhenEmpty: true,
+        allowEmptyLines: false,
+      }],
     },
   },
 ]);

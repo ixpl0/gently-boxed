@@ -9,7 +9,7 @@
     />
   </div>
 
-  <div class="page">
+  <div class="cube-wrapper">
     <div
       class="cube"
       :data-side="side"
@@ -19,6 +19,7 @@
         <slot name="front">
           incredible
         </slot>
+        <SparklesSparkles />
       </div>
 
       <div class="side back">
@@ -56,6 +57,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import SparklesSparkles from '#shared/ui/SparklesSparkles.vue';
 
 const SIDES = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
@@ -130,7 +132,7 @@ function spinCube(): void {
   }
 }
 
-.page {
+.cube-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
