@@ -1,11 +1,16 @@
 <template>
   <div class="main-page">
-    <TheCube />
+    <TheCube>
+      <template #front>
+        <ProfileCard />
+      </template>
+    </TheCube>
   </div>
 </template>
 
 <script setup lang="ts">
-import TheCube from '#shared/ui/TheCube.vue';
+import { TheCube } from '#widgets/the-cube';
+import { ProfileCard } from '#widgets/profile-card';
 </script>
 
 <style scoped>

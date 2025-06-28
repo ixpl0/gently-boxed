@@ -57,25 +57,40 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import SparklesSparkles from '#shared/ui/SparklesSparkles.vue';
+import { SparklesSparkles } from '#shared/ui';
 
 const SIDES = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
-type SideType = typeof SIDES[number]
+type SideType = typeof SIDES[number];
 
 const side = ref<SideType>('front');
 const isBackgroundActive = ref(true);
 
+function getRandomAvailableSideIndex(currentIndex: number): number | undefined {
+  const availableIndices = SIDES
+    .map((_, index) => index)
+    .filter((index) => index !== currentIndex);
+
+  const randomIndex = Math.floor(Math.random() * availableIndices.length);
+
+  return availableIndices[randomIndex];
+}
+
 function spinCube(): void {
   const currentIndex = SIDES.indexOf(side.value);
-  const randomOffset = Math.floor(Math.random() * 5);
-  const nextIndex = randomOffset === currentIndex ? 5 : randomOffset;
-  const nextSide = SIDES[nextIndex];
+  const nextIndex = getRandomAvailableSideIndex(currentIndex);
 
-  if (nextSide) {
-    side.value = nextSide;
+  if (nextIndex === undefined) {
+    return;
   }
 
+  const nextSide = SIDES[nextIndex];
+
+  if (!nextSide) {
+    return;
+  }
+
+  side.value = nextSide;
   isBackgroundActive.value = !isBackgroundActive.value;
 }
 </script>
