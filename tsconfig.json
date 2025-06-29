@@ -14,15 +14,6 @@
     "noUncheckedSideEffectImports": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "#shared/*": ["./shared/*"],
-      "#entities/*": ["./entities/*"],
-      "#features/*": ["./features/*"],
-      "#widgets/*": ["./widgets/*"],
-      "#pages/*": ["./pages/*"],
-      "#processes/*": ["./processes/*"],
-      "#app/*": ["./app/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   }
 }

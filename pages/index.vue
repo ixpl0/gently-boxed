@@ -8,11 +8,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { TheCube } from '#widgets/the-cube';
-import { ProfileCard } from '#widgets/profile-card';
-</script>
-
 <style scoped>
 .main-page {
   display: flex;

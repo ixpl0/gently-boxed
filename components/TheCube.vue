@@ -57,7 +57,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { SparklesSparkles } from '#shared/ui';
 
 const SIDES = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
