@@ -1,10 +1,17 @@
 <template>
   <div class="sparkles-sparkles">
     <div
-      v-for="i in sparkleCount"
-      :key="i"
+      v-for="(sparkle, index) in sparkles"
+      :key="`sparkle-${index}`"
       class="sparkle"
       :data-type="type"
+      :style="{
+        top: sparkle.top,
+        left: sparkle.left,
+        animationDelay: sparkle.delay,
+        animationDuration: `${duration}s`
+      }"
+      @animationiteration="() => updateSparklePosition(index)"
     >
       <svg
         v-if="type === 'star'"
@@ -23,12 +30,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import {
+  computed,
+  onMounted,
+  ref,
+} from 'vue';
 
 type SparkleType = 'cross' | 'star' | 'plus' | 'asterisk' | 'diamond';
 
+interface SparkleData {
+  top: string;
+  left: string;
+  delay: string;
+}
+
 interface Props {
   type?: SparkleType;
+  duration?: number;
+  count?: number;
 }
 
 const SPARKLE_COUNTS: Record<SparkleType, number> = {
@@ -39,9 +58,48 @@ const SPARKLE_COUNTS: Record<SparkleType, number> = {
   diamond: 6,
 };
 
-const props = withDefaults(defineProps<Props>(), { type: 'cross' });
+const POSITION_RANGE = {
+  min: 10,
+  max: 90,
+};
 
-const sparkleCount = computed(() => SPARKLE_COUNTS[props.type] ?? 12);
+const props = withDefaults(defineProps<Props>(), {
+  type: 'cross',
+  duration: 2,
+  count: 0,
+});
+
+const sparkleCount = computed(() => props.count || SPARKLE_COUNTS[props.type] || 12);
+const sparkles = ref<SparkleData[]>([]);
+
+const generateRandomPosition = (index: number, total: number): SparkleData => ({
+  top: `${Math.random() * (POSITION_RANGE.max - POSITION_RANGE.min) + POSITION_RANGE.min}%`,
+  left: `${Math.random() * (POSITION_RANGE.max - POSITION_RANGE.min) + POSITION_RANGE.min}%`,
+  delay: `${(props.duration * index) / total}s`,
+});
+
+const updateSparklePosition = (index: number): void => {
+  const sparkle = sparkles.value[index];
+
+  if (!sparkle) {
+    return;
+  }
+
+  const newPosition = generateRandomPosition(index, sparkles.value.length);
+
+  sparkle.top = newPosition.top;
+  sparkle.left = newPosition.left;
+};
+
+const initializeSparkles = (): void => {
+  const count = sparkleCount.value;
+
+  sparkles.value = Array.from({ length: count }, (_, index) => (
+    generateRandomPosition(index, count)
+  ));
+};
+
+onMounted(initializeSparkles);
 </script>
 
 <style scoped>
@@ -52,13 +110,12 @@ const sparkleCount = computed(() => SPARKLE_COUNTS[props.type] ?? 12);
 }
 
 .sparkle {
-  --duration: 2s;
   position: absolute;
   width: 16px;
   height: 16px;
   color: #fff;
   transform: translate(-50%, -50%);
-  animation: sparkle var(--duration) infinite;
+  animation: sparkle infinite;
 }
 
 .sparkle-icon {
@@ -72,7 +129,6 @@ const sparkleCount = computed(() => SPARKLE_COUNTS[props.type] ?? 12);
   position: relative;
   width: 100%;
   height: 100%;
-  animation: sparkle-scale var(--duration) infinite;
 
   &::before,
   &::after {
@@ -99,161 +155,65 @@ const sparkleCount = computed(() => SPARKLE_COUNTS[props.type] ?? 12);
   }
 }
 
-.sparkle[data-type="plus"] {
-  .sparkle-shape {
-    --offset: calc((12px - 2px) / -2);
-    --size: 12px;
+.sparkle[data-type="plus"] .sparkle-shape {
+  --offset: calc((12px - 2px) / -2);
+  --size: 12px;
 
-    &::before {
-      left: var(--offset);
-      width: var(--size);
-    }
+  &::before {
+    left: var(--offset);
+    width: var(--size);
+  }
 
-    &::after {
-      top: var(--offset);
-      height: var(--size);
-    }
+  &::after {
+    top: var(--offset);
+    height: var(--size);
   }
 }
 
-.sparkle[data-type="asterisk"] {
-  .sparkle-shape {
-    &::before,
-    &::after {
-      transform-origin: center;
-    }
+.sparkle[data-type="asterisk"] .sparkle-shape {
+  &::before,
+  &::after {
+    transform-origin: center;
+  }
 
-    &::before {
-      transform: rotate(45deg);
-    }
+  &::before {
+    transform: rotate(45deg);
+  }
 
-    &::after {
-      transform: rotate(-45deg);
-    }
+  &::after {
+    transform: rotate(-45deg);
   }
 }
 
-.sparkle[data-type="diamond"] {
-  .sparkle-shape {
-    --size: 8px;
-    --offset: calc(50% - 4px);
+.sparkle[data-type="diamond"] .sparkle-shape {
+  --size: 8px;
+  --offset: calc(50% - 4px);
 
-    &::before {
-      top: var(--offset);
-      left: var(--offset);
-      width: var(--size);
-      height: var(--size);
-      border: 2px solid #fff;
-      border-radius: 0;
-      transform: rotate(45deg);
-    }
-
-    &::after {
-      display: none;
-    }
+  &::before {
+    top: var(--offset);
+    left: var(--offset);
+    width: var(--size);
+    height: var(--size);
+    border: 2px solid #fff;
+    border-radius: 0;
+    transform: rotate(45deg);
   }
-}
 
-.sparkle:nth-child(1) {
-  top: 10%;
-  left: 20%;
-  animation-delay: calc(var(--duration) * 0 / 12);
-}
-
-.sparkle:nth-child(2) {
-  top: 20%;
-  left: 70%;
-  animation-delay: calc(var(--duration) * 1 / 12);
-}
-
-.sparkle:nth-child(3) {
-  top: 70%;
-  left: 10%;
-  animation-delay: calc(var(--duration) * 2 / 12);
-}
-
-.sparkle:nth-child(4) {
-  top: 80%;
-  left: 80%;
-  animation-delay: calc(var(--duration) * 3 / 12);
-}
-
-.sparkle:nth-child(5) {
-  top: 50%;
-  left: 5%;
-  animation-delay: calc(var(--duration) * 4 / 12);
-}
-
-.sparkle:nth-child(6) {
-  top: 40%;
-  left: 90%;
-  animation-delay: calc(var(--duration) * 5 / 12);
-}
-
-.sparkle:nth-child(7) {
-  top: 90%;
-  left: 30%;
-  animation-delay: calc(var(--duration) * 6 / 12);
-}
-
-.sparkle:nth-child(8) {
-  top: 70%;
-  left: 60%;
-  animation-delay: calc(var(--duration) * 7 / 12);
-}
-
-.sparkle:nth-child(9) {
-  top: 30%;
-  left: 95%;
-  animation-delay: calc(var(--duration) * 8 / 12);
-}
-
-.sparkle:nth-child(10) {
-  top: 30%;
-  left: 40%;
-  animation-delay: calc(var(--duration) * 9 / 12);
-}
-
-.sparkle:nth-child(11) {
-  top: 10%;
-  left: 50%;
-  animation-delay: calc(var(--duration) * 10 / 12);
-}
-
-.sparkle:nth-child(12) {
-  top: 55%;
-  left: 45%;
-  animation-delay: calc(var(--duration) * 11 / 12);
-}
-
-.sparkle:nth-child(13) {
-  top: 60%;
-  left: 25%;
-  animation-delay: calc(var(--duration) * 12 / 15);
-}
-
-.sparkle:nth-child(14) {
-  top: 85%;
-  left: 65%;
-  animation-delay: calc(var(--duration) * 13 / 15);
-}
-
-.sparkle:nth-child(15) {
-  top: 25%;
-  left: 15%;
-  animation-delay: calc(var(--duration) * 14 / 15);
+  &::after {
+    display: none;
+  }
 }
 
 @keyframes sparkle {
   0%,
   100% {
     opacity: 0;
-    transform: scale(0);
+    transform: translate(-50%, -50%) scale(0);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 </style>
