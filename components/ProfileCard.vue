@@ -1,35 +1,35 @@
 <template>
   <div class="front-content">
-    <div class="profile-card">
+    <UiCard class="profile-card">
       <div class="profile-header">
         <h1 class="name">
           ixplo
         </h1>
-        <p class="role">
+        <div class="role">
           Frontend Developer
-        </p>
+        </div>
       </div>
 
       <div class="profile-content">
-        <p class="description">
-          Creative portfolio with<br />
-          <span class="highlight">open source code</span>
-        </p>
+        <div class="description">
+          <div>Creative portfolio with</div>
+          <div class="highlight">open source code</div>
+        </div>
       </div>
 
       <div class="profile-footer">
         <div class="tech-stack">
-          <span class="tech">Vue/Nuxt</span>
-          <span class="tech">React/Next</span>
-          <span class="tech">TypeScript</span>
+          <UiBadge>Vue/Nuxt</UiBadge>
+          <UiBadge>React/Next</UiBadge>
+          <UiBadge>TypeScript</UiBadge>
         </div>
       </div>
-    </div>
+    </UiCard>
 
     <div class="profile-actions">
-      <button class="portfolio-btn">
+      <UiButton>
         Contacts
-      </button>
+      </UiButton>
     </div>
   </div>
 </template>
@@ -43,11 +43,6 @@
 
 .profile-card {
   width: 300px;
-  padding: 20px;
-  background: rgb(255 255 255 / 10%);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
-  backdrop-filter: blur(10px);
 }
 
 .profile-header {
@@ -92,39 +87,9 @@
   justify-content: center;
 }
 
-.tech {
-  margin: 0 8px;
-  padding: 4px 8px;
-  color: #fff;
-  font-size: 14px;
-  background: rgb(255 255 255 / 10%);
-  border-radius: 4px;
-}
-
 .profile-actions {
   display: flex;
   justify-content: center;
   margin-top: 16px;
-}
-
-.portfolio-btn {
-  margin-top: 10px;
-  padding: 10px 20px;
-  color: #fff;
-  font-size: 16px;
-  background: rgb(255 255 255 / 15%);
-  border: 1px solid rgb(255 255 255 / 30%);
-  border-radius: 4px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
-  transition: all 0.2s;
-  cursor: pointer;
-
-  &:hover {
-    background: rgb(255 255 255 / 25%);
-    border-color: rgb(255 255 255 / 50%);
-    box-shadow: 0 4px 12px rgb(0 0 0 / 25%);
-    transform: translateY(-1px);
-  }
 }
 </style>

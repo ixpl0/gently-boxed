@@ -16,37 +16,42 @@
       @click="spinCube"
     >
       <div class="side front">
+        <SparklesSparkles type="star" />
         <slot name="front">
           incredible
         </slot>
-        <SparklesSparkles />
       </div>
 
       <div class="side back">
+        <SparklesSparkles type="cross" />
         <slot name="back">
           unbelievable
         </slot>
       </div>
 
       <div class="side left">
+        <SparklesSparkles type="plus" />
         <slot name="left">
           amazing
         </slot>
       </div>
 
       <div class="side right">
+        <SparklesSparkles type="asterisk" />
         <slot name="right">
           fantastic
         </slot>
       </div>
 
       <div class="side top">
+        <SparklesSparkles type="diamond" />
         <slot name="top">
           magnificent
         </slot>
       </div>
 
       <div class="side bottom">
+        <SparklesSparkles type="cross" />
         <slot name="bottom">
           wonderful
         </slot>
@@ -58,9 +63,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const SIDES = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
+type SideType = 'front' | 'back' | 'left' | 'right' | 'top' | 'bottom';
 
-type SideType = typeof SIDES[number];
+const SIDES: readonly SideType[] = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
 const side = ref<SideType>('front');
 const isBackgroundActive = ref(true);
