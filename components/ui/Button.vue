@@ -22,7 +22,7 @@ defineEmits<{
   border: 1px solid rgb(255 255 255 / 30%);
   border-radius: 4px;
   box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(7px);
   transition: all 0.2s;
   cursor: pointer;
 
