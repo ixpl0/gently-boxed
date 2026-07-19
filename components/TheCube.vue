@@ -51,15 +51,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import type { SideType } from '~/utils/sides';
+import { SIDES } from '~/utils/sides';
 
-type SideType = 'front' | 'back' | 'left' | 'right' | 'top' | 'bottom';
+const props = defineProps<{
+  side: SideType;
+}>();
 
-const SIDES: readonly SideType[] = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
+const emit = defineEmits<{
+  'update:side': [side: SideType];
+}>();
 
-const side = ref<SideType>('front');
-
-function getRandomAvailableSideIndex(currentIndex: number): number | undefined {
+const getRandomAvailableSideIndex = (currentIndex: number): number | undefined => {
   const availableIndices = SIDES
     .map((_, index) => index)
     .filter((index) => index !== currentIndex);
@@ -67,10 +70,10 @@ function getRandomAvailableSideIndex(currentIndex: number): number | undefined {
   const randomIndex = Math.floor(Math.random() * availableIndices.length);
 
   return availableIndices[randomIndex];
-}
+};
 
-function spinCube(): void {
-  const currentIndex = SIDES.indexOf(side.value);
+const spinCube = (): void => {
+  const currentIndex = SIDES.indexOf(props.side);
   const nextIndex = getRandomAvailableSideIndex(currentIndex);
 
   if (nextIndex === undefined) {
@@ -83,8 +86,8 @@ function spinCube(): void {
     return;
   }
 
-  side.value = nextSide;
-}
+  emit('update:side', nextSide);
+};
 </script>
 
 <style scoped>
@@ -101,8 +104,6 @@ function spinCube(): void {
   width: 500px;
   height: 500px;
   transform: translateZ(-250px);
-
-  /* TODO: временно замедлено в 3 раза для отладки, вернуть 0.7s */
   transition: transform 2.1s;
   cursor: pointer;
   user-select: none;

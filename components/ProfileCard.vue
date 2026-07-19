@@ -1,21 +1,23 @@
 <template>
   <div class="front-content">
     <UiCard class="profile-card">
-      <div class="profile-header">
-        <h1 class="name">
-          ixplo
-        </h1>
-        <div class="role">
-          Frontend Developer
+      <UiLayer>
+        <div class="profile-header">
+          <h1 class="name">
+            ixplo
+          </h1>
+          <div class="role">
+            Frontend Developer
+          </div>
         </div>
-      </div>
 
-      <div class="profile-content">
-        <div class="description">
-          <div>Creative portfolio with</div>
-          <div class="highlight">open source code</div>
+        <div class="profile-content">
+          <div class="description">
+            <div>Creative portfolio with</div>
+            <div class="highlight">open source code</div>
+          </div>
         </div>
-      </div>
+      </UiLayer>
 
       <div class="profile-footer">
         <div class="tech-stack">

@@ -52,8 +52,9 @@ interface Props {
   count?: number;
 }
 
-const POSITION_MIN = 0;
-const POSITION_MAX = 100;
+// Keep anchors away from face edges so particles and their glow stay inside
+const POSITION_MIN = 3;
+const POSITION_MAX = 97;
 const RANDOM_OFFSET_RANGE = 5;
 const OFFSET_MULTIPLIER = 2;
 const HALF_DIVISOR = 0.5;
@@ -251,16 +252,16 @@ onMounted(initializeSparkles);
   }
 
   &::before {
-    top: 0;
-    left: calc((var(--cross-horizontal-length) - var(--cross-line-width)) / -2);
+    top: calc((100% - var(--cross-line-width)) / 2);
+    left: calc((100% - var(--cross-horizontal-length)) / 2);
     width: var(--cross-horizontal-length);
     height: 0;
     border-top-width: var(--cross-line-width);
   }
 
   &::after {
-    top: calc((var(--cross-vertical-length) - var(--cross-line-width)) / -2);
-    left: 0;
+    top: calc((100% - var(--cross-vertical-length)) / 2);
+    left: calc((100% - var(--cross-line-width)) / 2);
     width: 0;
     height: var(--cross-vertical-length);
     border-left-width: var(--cross-line-width);
@@ -268,7 +269,7 @@ onMounted(initializeSparkles);
 }
 
 .sparkle[data-type="plus"] .sparkle-shape {
-  --offset: calc((var(--plus-size) - var(--cross-line-width)) / -2);
+  --offset: calc((100% - var(--plus-size)) / 2);
   --size: var(--plus-size);
 
   &::before {
@@ -299,7 +300,7 @@ onMounted(initializeSparkles);
 
 .sparkle[data-type="diamond"] .sparkle-shape {
   --size: var(--diamond-size);
-  --offset: calc(50% - 4px);
+  --offset: calc(50% - var(--diamond-size) / 2 - var(--cross-line-width));
 
   &::before {
     top: var(--offset);

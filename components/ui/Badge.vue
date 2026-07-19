@@ -14,6 +14,7 @@
   background: rgb(255 255 255 / 12%);
   border: 1px solid rgb(255 255 255 / 20%);
   border-radius: 4px;
+  backdrop-filter: blur(4px);
   transform: translateZ(var(--elevation-step));
 }
 </style>

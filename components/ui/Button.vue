@@ -21,6 +21,7 @@ defineEmits<{
   background: rgb(255 255 255 / 15%);
   border: 1px solid rgb(255 255 255 / 30%);
   border-radius: 4px;
+  backdrop-filter: blur(4px);
   transform: translateZ(var(--elevation-step));
   transition: all 0.2s;
   cursor: pointer;
