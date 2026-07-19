@@ -8,19 +8,24 @@
 /* Nested 3D transforms compose, so one step per element gives uniform levels at any nesting depth */
 .ui-card {
   position: relative;
-  padding: 20px;
-  background: linear-gradient(160deg, rgb(255 255 255 / 18%), rgb(255 255 255 / 6%));
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: 8px;
+  padding: 24px;
+
+  /* Opaque panel colors derive from the face color via fixed OKLCH lightness offsets */
+  background: oklch(from var(--surface-color) calc(l + 0.05) c h);
+  border: 1px solid oklch(from var(--surface-color) calc(l + 0.14) c h);
+  border-radius: 16px;
+  corner-shape: squircle;
   transform: translateZ(var(--elevation-step));
   transform-style: preserve-3d;
 
-  /* Backdrop blur lives on a child overlay: on the card itself it would flatten elevated children */
+  /* The darker projection one elevation level down works as a cast shadow */
   &::before {
     position: absolute;
     inset: 0;
+    background: oklch(from var(--surface-color) calc(l - 0.04) c h);
     border-radius: inherit;
-    backdrop-filter: blur(4px);
+    corner-shape: inherit;
+    transform: translateZ(calc(2px - var(--elevation-step)));
     content: "";
   }
 }

@@ -144,32 +144,38 @@ const spinCube = (): void => {
   transform-style: preserve-3d;
 
   &.front {
-    background: #3973cc;
+    --surface-color: #3973cc;
+    background: var(--surface-color);
     transform: translateZ(250px);
   }
 
   &.back {
-    background: #e05a5a;
+    --surface-color: #e05a5a;
+    background: var(--surface-color);
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.left {
-    background: #e09c36;
+    --surface-color: #e09c36;
+    background: var(--surface-color);
     transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
   }
 
   &.right {
-    background: #36b374;
+    --surface-color: #36b374;
+    background: var(--surface-color);
     transform: rotateY(90deg) rotateZ(-90deg) translateZ(250px);
   }
 
   &.top {
-    background: #36b0c2;
+    --surface-color: #36b0c2;
+    background: var(--surface-color);
     transform: rotateX(90deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.bottom {
-    background: #9b6bc2;
+    --surface-color: #9b6bc2;
+    background: var(--surface-color);
     transform: rotateX(-90deg) rotateZ(180deg) translateZ(250px);
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="front-content">
     <UiCard class="profile-card">
-      <UiLayer>
+      <UiText>
         <div class="profile-header">
           <h1 class="name">
             ixplo
@@ -17,7 +17,7 @@
             <div class="highlight">open source code</div>
           </div>
         </div>
-      </UiLayer>
+      </UiText>
 
       <div class="profile-footer">
         <div class="tech-stack">
@@ -45,7 +45,7 @@
 }
 
 .profile-card {
-  width: 300px;
+  width: 320px;
 }
 
 .profile-header {
@@ -55,33 +55,38 @@
 .name {
   margin: 0;
   font-size: 28px;
-  font-weight: bold;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .role {
-  margin: 4px 0 0;
-  color: #ccc;
-  font-size: 18px;
+  margin: 8px 0 0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .profile-content {
-  margin: 20px 0;
+  margin: 16px 0 0;
   text-align: center;
 }
 
 .description {
   margin: 0;
-  color: #ddd;
-  font-size: 16px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .highlight {
   color: #fc0;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .profile-footer {
-  margin-top: 10px;
+  margin-top: 16px;
   transform-style: preserve-3d;
 }
 
@@ -89,13 +94,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 8px;
   transform-style: preserve-3d;
 }
 
 .profile-actions {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 24px;
   transform-style: preserve-3d;
 }
 </style>

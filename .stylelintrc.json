@@ -130,6 +130,9 @@
       "ignore": ["stylelint-commands"]
     }],
     "block-no-empty": true,
+    "property-no-unknown": [true, {
+      "ignoreProperties": ["corner-shape"]
+    }],
     "function-calc-no-unspaced-operator": true,
     "color-named": "never",
     "selector-max-id": 0,
