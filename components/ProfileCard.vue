@@ -2,30 +2,23 @@
   <div class="front-content">
     <UiCard class="profile-card">
       <UiText>
-        <div class="profile-header">
-          <h1 class="name">
-            ixplo
-          </h1>
-          <div class="role">
-            Frontend Developer
-          </div>
-        </div>
-
-        <div class="profile-content">
-          <div class="description">
-            <div>Creative portfolio with</div>
-            <div class="highlight">open source code</div>
-          </div>
-        </div>
+        <h1 class="name">
+          ixplo
+        </h1>
       </UiText>
 
-      <div class="profile-footer">
-        <div class="tech-stack">
-          <UiBadge>Vue/Nuxt</UiBadge>
-          <UiBadge>React/Next</UiBadge>
-          <UiBadge>TypeScript</UiBadge>
-        </div>
+      <div class="specializations">
+        <UiBadge>AI Harness Architect</UiBadge>
+        <UiBadge>Frontend Developer</UiBadge>
+        <UiBadge>Team Leader</UiBadge>
       </div>
+
+      <UiText>
+        <div class="description">
+          <div>Creative portfolio with</div>
+          <div class="highlight">open source code</div>
+        </div>
+      </UiText>
     </UiCard>
 
     <div class="profile-actions">
@@ -48,54 +41,34 @@
   width: 320px;
 }
 
-.profile-header {
-  text-align: center;
-}
-
 .name {
   margin: 0;
   font-size: 28px;
   font-weight: 700;
   line-height: 1.2;
-}
-
-.role {
-  margin: 8px 0 0;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.profile-content {
-  margin: 16px 0 0;
   text-align: center;
 }
 
+.specializations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  transform-style: preserve-3d;
+}
+
 .description {
-  margin: 0;
+  margin: 16px 0 0;
   color: #fff;
   font-size: 15px;
   line-height: 1.5;
+  text-align: center;
 }
 
 .highlight {
   color: #fc0;
   font-weight: 600;
-}
-
-.profile-footer {
-  margin-top: 16px;
-  transform-style: preserve-3d;
-}
-
-.tech-stack {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  transform-style: preserve-3d;
 }
 
 .profile-actions {

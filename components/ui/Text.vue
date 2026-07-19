@@ -15,6 +15,9 @@
 /* Lifts text content one elevation level above the parent surface */
 .ui-text {
   position: relative;
+
+  /* flow-root keeps slotted margins inside the box, so both slot copies lay out identically */
+  display: flow-root;
   transform: translateZ(var(--elevation-step));
   transform-style: preserve-3d;
 }

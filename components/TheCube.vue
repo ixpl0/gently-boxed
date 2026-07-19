@@ -8,42 +8,54 @@
       <div class="side front">
         <SparklesSparkles type="star" />
         <slot name="front">
-          incredible
+          <UiText>
+            incredible
+          </UiText>
         </slot>
       </div>
 
       <div class="side back">
         <SparklesSparkles type="cross" />
         <slot name="back">
-          unbelievable
+          <UiText>
+            unbelievable
+          </UiText>
         </slot>
       </div>
 
       <div class="side left">
         <SparklesSparkles type="plus" />
         <slot name="left">
-          amazing
+          <UiText>
+            amazing
+          </UiText>
         </slot>
       </div>
 
       <div class="side right">
         <SparklesSparkles type="asterisk" />
         <slot name="right">
-          fantastic
+          <UiText>
+            fantastic
+          </UiText>
         </slot>
       </div>
 
       <div class="side top">
         <SparklesSparkles type="diamond" />
         <slot name="top">
-          magnificent
+          <UiText>
+            magnificent
+          </UiText>
         </slot>
       </div>
 
       <div class="side bottom">
         <SparklesSparkles type="cross" />
         <slot name="bottom">
-          wonderful
+          <UiText>
+            wonderful
+          </UiText>
         </slot>
       </div>
     </div>
