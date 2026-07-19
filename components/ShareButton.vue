@@ -125,6 +125,7 @@ const HALF = 0.5;
 const state = ref<ShareState>('idle');
 const burstParticles = ref<BurstParticle[]>([]);
 const resetTimer = ref<number | undefined>(undefined);
+const isNativeSharing = ref(false);
 
 const isSuccess = computed(() => state.value === 'success');
 
@@ -172,22 +173,57 @@ const copyPageUrl = (): void => {
     });
 };
 
-const handleShare = (): void => {
-  if (isSuccess.value) {
-    return;
-  }
-
+const playSuccess = (): void => {
   burstParticles.value = Array.from(
     { length: PARTICLE_COUNT },
     (_, index) => createBurstParticle(index),
   );
   state.value = 'success';
 
-  copyPageUrl();
-
   resetTimer.value = window.setTimeout(() => {
     state.value = 'idle';
   }, RESET_DELAY_MS);
+};
+
+const isTouchDevice = (): boolean => (
+  window.matchMedia('(hover: none) and (pointer: coarse)').matches
+);
+
+const canUseNativeShare = (): boolean => (
+  isTouchDevice() && typeof navigator.share === 'function'
+);
+
+const openNativeShare = (): void => {
+  isNativeSharing.value = true;
+
+  navigator.share({
+    title: document.title,
+    url: window.location.href,
+  })
+    .then(() => {
+      playSuccess();
+    })
+    .catch(() => {
+      // The user dismissed the share sheet — no success feedback needed
+    })
+    .finally(() => {
+      isNativeSharing.value = false;
+    });
+};
+
+const handleShare = (): void => {
+  if (isSuccess.value || isNativeSharing.value) {
+    return;
+  }
+
+  if (canUseNativeShare()) {
+    openNativeShare();
+
+    return;
+  }
+
+  copyPageUrl();
+  playSuccess();
 };
 
 onBeforeUnmount(() => {
@@ -343,7 +379,12 @@ onBeforeUnmount(() => {
   animation: burst-ring 0.55s cubic-bezier(0.17, 0.67, 0.35, 1) 0.28s;
 }
 
+/* The defaults below are overridden per particle via inline style from the script */
 .burst-particle {
+  --tx: 0;
+  --ty: 0;
+  --tz: 0;
+  --spin: 0deg;
   position: absolute;
   top: 50%;
   left: 50%;
