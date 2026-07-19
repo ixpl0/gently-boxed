@@ -25,6 +25,8 @@
       <UiButton>
         Contacts
       </UiButton>
+
+      <ShareButton />
     </div>
   </div>
 </template>
@@ -74,6 +76,7 @@
 .profile-actions {
   display: flex;
   justify-content: center;
+  gap: 12px;
   margin-top: 24px;
   transform-style: preserve-3d;
 }
