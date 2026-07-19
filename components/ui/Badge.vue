@@ -11,8 +11,9 @@
   padding: 4px 8px;
   color: #fff;
   font-size: 14px;
-  background: rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 12%);
+  border: 1px solid rgb(255 255 255 / 20%);
   border-radius: 4px;
-  backdrop-filter: blur(2px);
+  transform: translateZ(var(--elevation-step));
 }
 </style>

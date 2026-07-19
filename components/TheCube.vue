@@ -1,14 +1,4 @@
 <template>
-  <div class="background">
-    <div
-      v-for="id in [0, 1, 2]"
-      :key="id"
-      class="background-side"
-      :class="{ active: isBackgroundActive }"
-      :data-id="id"
-    />
-  </div>
-
   <div class="cube-wrapper">
     <div
       class="cube"
@@ -68,7 +58,6 @@ type SideType = 'front' | 'back' | 'left' | 'right' | 'top' | 'bottom';
 const SIDES: readonly SideType[] = ['front', 'back', 'left', 'right', 'top', 'bottom'] as const;
 
 const side = ref<SideType>('front');
-const isBackgroundActive = ref(true);
 
 function getRandomAvailableSideIndex(currentIndex: number): number | undefined {
   const availableIndices = SIDES
@@ -95,59 +84,10 @@ function spinCube(): void {
   }
 
   side.value = nextSide;
-  isBackgroundActive.value = !isBackgroundActive.value;
 }
 </script>
 
 <style scoped>
-.background {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  filter: invert(1);
-}
-
-.background-side {
-  position: absolute;
-  justify-content: center;
-  align-items: center;
-  width: 16px;
-  height: 20px;
-  color: #fff;
-  font-family: sans-serif;
-  font-size: 26px;
-  background: #165d7987;
-  transform: perspective(1px) rotate3d(1, 1.5, 0, 10deg);
-  transition: all 0.7s;
-  mix-blend-mode: screen;
-  filter: blur(2px);
-
-  &.active {
-    transform: rotate3d(1, -1.5, 0, 10deg);
-  }
-
-  &[data-id="1"] {
-    background: #ea252587;
-    transform: rotate3d(-4.1, 0.7, 0, 10deg);
-
-    &.active {
-      transform: perspective(1px) rotate3d(0.4, 0.8, 0, 10deg);
-    }
-  }
-
-  &[data-id="2"] {
-    background: #3ea65487;
-    transform: perspective(1px) rotate3d(0.5, -1.1, 0, 10deg);
-
-    &.active {
-      transform: perspective(1px) rotate3d(-3.9, -0.7, 0, 10deg);
-    }
-  }
-}
-
 .cube-wrapper {
   display: flex;
   justify-content: center;
@@ -161,7 +101,9 @@ function spinCube(): void {
   width: 500px;
   height: 500px;
   transform: translateZ(-250px);
-  transition: transform 0.7s;
+
+  /* TODO: временно замедлено в 3 раза для отладки, вернуть 0.7s */
+  transition: transform 2.1s;
   cursor: pointer;
   user-select: none;
   transform-style: preserve-3d;
@@ -188,6 +130,7 @@ function spinCube(): void {
 }
 
 .side {
+  --elevation-step: 25px;
   position: absolute;
   display: flex;
   justify-content: center;
@@ -197,6 +140,7 @@ function spinCube(): void {
   color: #fff;
   font-size: 45px;
   background-color: #000;
+  transform-style: preserve-3d;
 
   &.front {
     background: #3973cc;

@@ -39,6 +39,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform-style: preserve-3d;
 }
 
 .profile-card {
@@ -79,17 +80,20 @@
 
 .profile-footer {
   margin-top: 10px;
+  transform-style: preserve-3d;
 }
 
 .tech-stack {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  transform-style: preserve-3d;
 }
 
 .profile-actions {
   display: flex;
   justify-content: center;
   margin-top: 16px;
+  transform-style: preserve-3d;
 }
 </style>

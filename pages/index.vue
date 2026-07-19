@@ -15,6 +15,8 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f7f7fa;
+
+  /* TODO: временно почти чёрный фон для отладки визуальных артефактов, вернуть #f7f7fa */
+  background: #0a0a0a;
 }
 </style>
