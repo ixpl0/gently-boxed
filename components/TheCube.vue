@@ -3,9 +3,11 @@
     <div
       class="cube"
       :data-side="side"
-      @click="spinCube"
     >
-      <div class="side front">
+      <div
+        class="side front"
+        :inert="side !== 'front'"
+      >
         <SparklesSparkles type="star" />
         <slot name="front">
           <UiText>
@@ -14,7 +16,10 @@
         </slot>
       </div>
 
-      <div class="side back">
+      <div
+        class="side back"
+        :inert="side !== 'back'"
+      >
         <SparklesSparkles type="cross" />
         <slot name="back">
           <UiText>
@@ -23,7 +28,10 @@
         </slot>
       </div>
 
-      <div class="side left">
+      <div
+        class="side left"
+        :inert="side !== 'left'"
+      >
         <SparklesSparkles type="plus" />
         <slot name="left">
           <UiText>
@@ -32,7 +40,10 @@
         </slot>
       </div>
 
-      <div class="side right">
+      <div
+        class="side right"
+        :inert="side !== 'right'"
+      >
         <SparklesSparkles type="asterisk" />
         <slot name="right">
           <UiText>
@@ -41,7 +52,10 @@
         </slot>
       </div>
 
-      <div class="side top">
+      <div
+        class="side top"
+        :inert="side !== 'top'"
+      >
         <SparklesSparkles type="diamond" />
         <slot name="top">
           <UiText>
@@ -50,7 +64,10 @@
         </slot>
       </div>
 
-      <div class="side bottom">
+      <div
+        class="side bottom"
+        :inert="side !== 'bottom'"
+      >
         <SparklesSparkles type="cross" />
         <slot name="bottom">
           <UiText>
@@ -64,42 +81,10 @@
 
 <script setup lang="ts">
 import type { SideType } from '~/utils/sides';
-import { SIDES } from '~/utils/sides';
 
-const props = defineProps<{
+defineProps<{
   side: SideType;
 }>();
-
-const emit = defineEmits<{
-  'update:side': [side: SideType];
-}>();
-
-const getRandomAvailableSideIndex = (currentIndex: number): number | undefined => {
-  const availableIndices = SIDES
-    .map((_, index) => index)
-    .filter((index) => index !== currentIndex);
-
-  const randomIndex = Math.floor(Math.random() * availableIndices.length);
-
-  return availableIndices[randomIndex];
-};
-
-const spinCube = (): void => {
-  const currentIndex = SIDES.indexOf(props.side);
-  const nextIndex = getRandomAvailableSideIndex(currentIndex);
-
-  if (nextIndex === undefined) {
-    return;
-  }
-
-  const nextSide = SIDES[nextIndex];
-
-  if (!nextSide) {
-    return;
-  }
-
-  emit('update:side', nextSide);
-};
 </script>
 
 <style scoped>
@@ -117,7 +102,6 @@ const spinCube = (): void => {
   height: 500px;
   transform: translateZ(-250px);
   transition: transform 2.1s;
-  cursor: pointer;
   user-select: none;
   transform-style: preserve-3d;
 

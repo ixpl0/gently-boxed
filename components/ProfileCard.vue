@@ -22,7 +22,7 @@
     </UiCard>
 
     <div class="profile-actions">
-      <UiButton>
+      <UiButton @click="emit('openContacts')">
         Contacts
       </UiButton>
 
@@ -32,6 +32,10 @@
 </template>
 
 <script setup lang="ts">
+const emit = defineEmits<{
+  openContacts: [];
+}>();
+
 const BIRTH_DATE = new Date(1985, 7, 11);
 const CAREER_START_DATE = new Date(2010, 10, 1);
 

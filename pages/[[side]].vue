@@ -1,10 +1,32 @@
 <template>
   <div class="main-page">
-    <TheCube v-model:side="side">
+    <TheCube :side="side">
       <template #front>
-        <ProfileCard />
+        <ProfileCard @open-contacts="side = 'back'" />
+      </template>
+
+      <template #back>
+        <ContactsCard />
+      </template>
+
+      <template #left>
+        <ExperienceCard />
+      </template>
+
+      <template #right>
+        <ProjectsCard />
+      </template>
+
+      <template #top>
+        <WorkflowCard />
+      </template>
+
+      <template #bottom>
+        <LlmNoteCard />
       </template>
     </TheCube>
+
+    <SideNavigation :current-side="side" />
   </div>
 </template>
 
