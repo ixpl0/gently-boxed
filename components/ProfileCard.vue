@@ -13,12 +13,10 @@
         <UiBadge>Team Leader</UiBadge>
       </div>
 
-      <UiText>
-        <div class="description">
-          <div>{{ experienceYears }} years of experience</div>
-          <div>{{ age }} years old &middot; Tbilisi, Georgia</div>
-        </div>
-      </UiText>
+      <div class="description">
+        <div>{{ experienceYears }} years of experience</div>
+        <div>{{ age }} years old &middot; Tbilisi, Georgia</div>
+      </div>
     </UiCard>
 
     <div class="profile-actions">

@@ -11,6 +11,61 @@ export const SIDE_LABELS: Record<SideType, string> = {
   bottom: '???',
 };
 
+export const DIRECTIONS = ['left', 'right', 'up', 'down'] as const;
+
+export type DirectionType = typeof DIRECTIONS[number];
+
+// Which face lies in each screen direction for every fixed orientation in TheCube.vue,
+// derived from the per-side rotation matrices — spinning toward a direction shows that face
+export const SIDE_NEIGHBORS: Record<SideType, Record<DirectionType, SideType>> = {
+  front: {
+    left: 'left',
+    right: 'right',
+    up: 'top',
+    down: 'bottom',
+  },
+  back: {
+    left: 'top',
+    right: 'bottom',
+    up: 'left',
+    down: 'right',
+  },
+  left: {
+    left: 'front',
+    right: 'back',
+    up: 'bottom',
+    down: 'top',
+  },
+  right: {
+    left: 'bottom',
+    right: 'top',
+    up: 'front',
+    down: 'back',
+  },
+  top: {
+    left: 'back',
+    right: 'front',
+    up: 'right',
+    down: 'left',
+  },
+  bottom: {
+    left: 'right',
+    right: 'left',
+    up: 'back',
+    down: 'front',
+  },
+};
+
+// Mirrors the per-side SparklesSparkles types rendered inside TheCube.vue
+export const SIDE_SPARKLE_TYPES = {
+  front: 'star',
+  back: 'cross',
+  left: 'plus',
+  right: 'asterisk',
+  top: 'diamond',
+  bottom: 'cross',
+} as const satisfies Record<SideType, string>;
+
 // Mirrors the per-side --surface-color values defined in TheCube.vue styles
 export const SIDE_COLORS: Record<SideType, string> = {
   front: '#3973cc',

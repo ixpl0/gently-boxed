@@ -8,20 +8,19 @@
       </UiText>
 
       <div class="principles">
-        <UiText
+        <div
           v-for="principle in PRINCIPLES"
           :key="principle.title"
+          class="principle"
         >
-          <div class="principle">
-            <div class="principle-title">
-              {{ principle.title }}
-            </div>
-
-            <div class="principle-summary">
-              {{ principle.summary }}
-            </div>
+          <div class="principle-title">
+            {{ principle.title }}
           </div>
-        </UiText>
+
+          <div class="principle-summary">
+            {{ principle.summary }}
+          </div>
+        </div>
       </div>
 
       <div class="tools">

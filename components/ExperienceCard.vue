@@ -15,7 +15,7 @@
         >
           <UiBadge>{{ entry.period }}</UiBadge>
 
-          <UiText>
+          <div>
             <div class="entry-role">
               {{ entry.role }} &middot; {{ entry.company }}
             </div>
@@ -23,7 +23,7 @@
             <div class="entry-summary">
               {{ entry.summary }}
             </div>
-          </UiText>
+          </div>
         </div>
       </div>
     </UiCard>

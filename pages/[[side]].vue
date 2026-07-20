@@ -1,5 +1,12 @@
 <template>
   <div class="main-page">
+    <Transition name="sparkles-fade">
+      <SparklesSparkles
+        :key="side"
+        :type="SIDE_SPARKLE_TYPES[side]"
+      />
+    </Transition>
+
     <TheCube :side="side">
       <template #front>
         <ProfileCard @open-contacts="side = 'back'" />
@@ -31,9 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { SideType } from '~/utils/sides';
-import { getRoutePathFromSide, getSideFromRouteParam } from '~/utils/sides';
+import {
+  computed, onBeforeUnmount, onMounted,
+} from 'vue';
+import type { DirectionType, SideType } from '~/utils/sides';
+import {
+  getRoutePathFromSide, getSideFromRouteParam, SIDE_NEIGHBORS, SIDE_SPARKLE_TYPES,
+} from '~/utils/sides';
 
 definePageMeta({
   // Nuxt would otherwise remount the page on every param change, killing the spin transition
@@ -59,10 +70,45 @@ const side = computed<SideType>({
     void router.push(getRoutePathFromSide(nextSide));
   },
 });
+
+const spinToward = (direction: DirectionType): void => {
+  side.value = SIDE_NEIGHBORS[side.value][direction];
+};
+
+const KEY_DIRECTIONS: Record<string, DirectionType> = {
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+};
+
+const handleKeydown = (event: KeyboardEvent): void => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    return;
+  }
+
+  const direction = KEY_DIRECTIONS[event.key];
+
+  if (!direction) {
+    return;
+  }
+
+  event.preventDefault();
+  spinToward(direction);
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown);
+});
 </script>
 
 <style scoped>
 .main-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,5 +116,15 @@ const side = computed<SideType>({
   min-height: 100vh;
   min-height: 100dvh;
   background: #0a0a0a;
+}
+
+/* Outgoing background particles dissolve while still blinking, overlapping the
+   incoming set; entering needs no classes — each particle fades in on its own */
+.sparkles-fade-leave-active {
+  transition: opacity 2s;
+}
+
+.sparkles-fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -124,6 +124,8 @@
   color: #b9a8d6;
 }
 
+/* Blinks via opacity only: the compositor animates it without repainting the face,
+   while visibility toggling would invalidate the whole side texture twice a second */
 .terminal-cursor {
   display: inline-block;
   width: 7px;
@@ -131,12 +133,18 @@
   margin-left: 5px;
   vertical-align: -2px;
   background: #fff;
-  animation: cursor-blink 1.1s steps(2, start) infinite;
+  animation: cursor-blink 1.1s infinite;
 }
 
 @keyframes cursor-blink {
-  to {
-    visibility: hidden;
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 </style>
