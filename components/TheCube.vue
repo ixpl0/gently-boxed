@@ -105,6 +105,9 @@ defineProps<{
   user-select: none;
   transform-style: preserve-3d;
 
+  /* A permanent compositor layer: promoting it mid-spin flashes garbage GPU tiles */
+  will-change: transform;
+
   &[data-side="back"] {
     transform: translateZ(-250px) rotateY(-180deg) rotateZ(90deg);
   }
@@ -138,6 +141,10 @@ defineProps<{
   font-size: 45px;
   background-color: #000;
   transform-style: preserve-3d;
+
+  /* The cube is a closed convex solid, so hidden backfaces are always occluded anyway;
+     skipping them halves the surfaces the compositor rasterizes during a spin */
+  backface-visibility: hidden;
 
   &.front {
     --surface-color: #3973cc;
