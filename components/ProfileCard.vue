@@ -15,7 +15,8 @@
 
       <UiText>
         <div class="description">
-          {{ age }} years old &middot; Tbilisi, Georgia
+          <div>{{ experienceYears }} years of experience</div>
+          <div>{{ age }} years old &middot; Tbilisi, Georgia</div>
         </div>
       </UiText>
     </UiCard>
@@ -32,17 +33,19 @@
 
 <script setup lang="ts">
 const BIRTH_DATE = new Date(1985, 7, 11);
+const CAREER_START_DATE = new Date(2010, 10, 1);
 
-const getFullYearsSince = (birthDate: Date): number => {
+const getFullYearsSince = (startDate: Date): number => {
   const now = new Date();
-  const yearsDifference = now.getFullYear() - birthDate.getFullYear();
-  const hadBirthdayThisYear = now.getMonth() > birthDate.getMonth()
-    || (now.getMonth() === birthDate.getMonth() && now.getDate() >= birthDate.getDate());
+  const yearsDifference = now.getFullYear() - startDate.getFullYear();
+  const hadAnniversaryThisYear = now.getMonth() > startDate.getMonth()
+    || (now.getMonth() === startDate.getMonth() && now.getDate() >= startDate.getDate());
 
-  return hadBirthdayThisYear ? yearsDifference : yearsDifference - 1;
+  return hadAnniversaryThisYear ? yearsDifference : yearsDifference - 1;
 };
 
 const age = getFullYearsSince(BIRTH_DATE);
+const experienceYears = getFullYearsSince(CAREER_START_DATE);
 </script>
 
 <style scoped>
