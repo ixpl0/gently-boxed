@@ -3,7 +3,7 @@
     <UiCard class="profile-card">
       <UiText>
         <h1 class="name">
-          ixplo
+          Kashcheev Andrei
         </h1>
       </UiText>
 
@@ -15,8 +15,7 @@
 
       <UiText>
         <div class="description">
-          <div>Creative portfolio with</div>
-          <div class="highlight">open source code</div>
+          {{ age }} years old &middot; Tbilisi, Georgia
         </div>
       </UiText>
     </UiCard>
@@ -30,6 +29,21 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const BIRTH_DATE = new Date(1985, 7, 11);
+
+const getFullYearsSince = (birthDate: Date): number => {
+  const now = new Date();
+  const yearsDifference = now.getFullYear() - birthDate.getFullYear();
+  const hadBirthdayThisYear = now.getMonth() > birthDate.getMonth()
+    || (now.getMonth() === birthDate.getMonth() && now.getDate() >= birthDate.getDate());
+
+  return hadBirthdayThisYear ? yearsDifference : yearsDifference - 1;
+};
+
+const age = getFullYearsSince(BIRTH_DATE);
+</script>
 
 <style scoped>
 .front-content {
@@ -66,11 +80,6 @@
   font-size: 15px;
   line-height: 1.5;
   text-align: center;
-}
-
-.highlight {
-  color: #fc0;
-  font-weight: 600;
 }
 
 .profile-actions {

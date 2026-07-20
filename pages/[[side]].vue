@@ -46,6 +46,7 @@ const side = computed<SideType>({
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   background: #0a0a0a;
 }
 </style>
