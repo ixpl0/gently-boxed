@@ -4,6 +4,7 @@
       <SparklesSparkles
         :key="side"
         :type="SIDE_SPARKLE_TYPES[side]"
+        mirrored
       />
     </Transition>
 

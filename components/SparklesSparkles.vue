@@ -9,7 +9,7 @@
         top: sparkle.top,
         left: sparkle.left,
         animationDelay: sparkle.delay,
-        animationDuration: `${duration}s`
+        animationDuration: sparkle.duration
       }"
       @animationiteration="() => updateSparklePosition(index)"
     >
@@ -42,14 +42,21 @@ interface SparkleData {
   top: string;
   left: string;
   delay: string;
+  duration: string;
   baseX: number;
   baseY: number;
+}
+
+interface SparklePosition {
+  x: number;
+  y: number;
 }
 
 interface Props {
   type?: SparkleType;
   duration?: number;
   count?: number;
+  mirrored?: boolean;
 }
 
 // Keep anchors away from face edges so particles and their glow stay inside
@@ -58,6 +65,8 @@ const POSITION_MAX = 97;
 const RANDOM_OFFSET_RANGE = 5;
 const OFFSET_MULTIPLIER = 2;
 const HALF_DIVISOR = 0.5;
+const DURATION_JITTER_BASE = 0.8;
+const DURATION_JITTER_RANGE = 0.4;
 const DEFAULT_DURATION = 2;
 const DEFAULT_FALLBACK_COUNT = 12;
 const MAX_PARTICLES = 12;
@@ -70,7 +79,7 @@ const SPARKLE_COUNTS: Record<SparkleType, number> = {
   diamond: 6,
 } as const;
 
-const SPARKLE_POSITIONS_BASE = [
+const SPARKLE_POSITIONS_BASE: readonly SparklePosition[] = [
   {
     x: 20,
     y: 10,
@@ -131,12 +140,13 @@ const SPARKLE_POSITIONS_BASE = [
     x: 15,
     y: 25,
   },
-] as const;
+];
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'cross',
   duration: DEFAULT_DURATION,
   count: 0,
+  mirrored: false,
 });
 
 const sparkles = ref<SparkleData[]>([]);
@@ -155,11 +165,29 @@ const clampPosition = (value: number): number => (
   Math.max(POSITION_MIN, Math.min(POSITION_MAX, value))
 );
 
-const getPosition = (index: number): typeof SPARKLE_POSITIONS_BASE[number] => {
-  return SPARKLE_POSITIONS_BASE[index % SPARKLE_POSITIONS_BASE.length] as typeof SPARKLE_POSITIONS_BASE[number];
-};
+const POSITION_FULL_RANGE = 100;
 
-const createSparkleData = (index: number, position: typeof SPARKLE_POSITIONS_BASE[number]): SparkleData => {
+// A mirrored instance (the page background) shows the anchor constellation rotated
+// by 180deg, so it never repeats the pattern of the face instance mounted alongside
+const getAnchorPositions = (): readonly SparklePosition[] => (
+  props.mirrored
+    ? SPARKLE_POSITIONS_BASE.map(({ x, y }) => ({
+      x: POSITION_FULL_RANGE - x,
+      y: POSITION_FULL_RANGE - y,
+    }))
+    : SPARKLE_POSITIONS_BASE
+);
+
+// Every instance also walks its anchors in its own random order for extra variety
+const getShuffledPositions = (): readonly SparklePosition[] => getAnchorPositions()
+  .map((position) => ({
+    position,
+    sortKey: Math.random(),
+  }))
+  .sort((left, right) => left.sortKey - right.sortKey)
+  .map(({ position }) => position);
+
+const createSparkleData = (position: SparklePosition): SparkleData => {
   const offsetX = getRandomOffset();
   const offsetY = getRandomOffset();
   const x = clampPosition(position.x + offsetX);
@@ -168,7 +196,12 @@ const createSparkleData = (index: number, position: typeof SPARKLE_POSITIONS_BAS
   return {
     top: `${y}%`,
     left: `${x}%`,
-    delay: `${(props.duration * index) / sparkleCount.value}s`,
+
+    // Concurrently mounted instances (active face + page background) share the
+    // document timeline, so any common rhythm reads as sync: give every particle
+    // a fully random phase and its own cycle length so rhythms can never lock
+    delay: `${Math.random() * props.duration}s`,
+    duration: `${props.duration * (DURATION_JITTER_BASE + Math.random() * DURATION_JITTER_RANGE)}s`,
     baseX: position.x,
     baseY: position.y,
   };
@@ -192,11 +225,15 @@ const updateSparklePosition = (index: number): void => {
 
 const initializeSparkles = (): void => {
   const count = sparkleCount.value;
+  const positions = getShuffledPositions();
 
   sparkles.value = Array.from({ length: count }, (_, index) => {
-    const position = getPosition(index);
+    const position = positions[index % positions.length] ?? {
+      x: 50,
+      y: 50,
+    };
 
-    return createSparkleData(index, position);
+    return createSparkleData(position);
   });
 };
 
