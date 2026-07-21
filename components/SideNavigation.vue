@@ -52,7 +52,7 @@ defineProps<{
   background: var(--dot-color);
   border: 1px solid #fff3;
   border-radius: 50%;
-  opacity: 0.35;
+  opacity: 0.45;
   transition: all 0.2s;
 }
 
@@ -69,7 +69,7 @@ defineProps<{
 }
 
 .current-label {
-  color: #777;
+  color: #8b93a7;
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;

@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
   align-items: center;
   min-height: 100vh;
   min-height: 100dvh;
-  background: #0a0a0a;
+  background: #131826;
 }
 
 /* Outgoing background particles dissolve while still blinking, overlapping the

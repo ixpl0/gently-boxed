@@ -45,6 +45,9 @@
 
 .title {
   margin: 0;
+
+  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
+  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
@@ -57,7 +60,7 @@
   width: 380px;
   margin-top: 18px;
   font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  background: oklch(from var(--surface-color) calc(l - 0.28) c h);
+  background: oklch(from var(--surface-color) calc(l - 0.08) c h);
   border: 1px solid oklch(from var(--surface-color) calc(l + 0.08) c h);
   border-radius: 12px;
   corner-shape: squircle;
@@ -80,7 +83,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  border-bottom: 1px solid oklch(from var(--surface-color) calc(l - 0.34) c h);
+  border-bottom: 1px solid oklch(from var(--surface-color) calc(l - 0.14) c h);
 }
 
 .terminal-dot {

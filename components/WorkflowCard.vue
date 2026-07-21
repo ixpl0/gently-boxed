@@ -74,6 +74,9 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 
 .title {
   margin: 0;
+
+  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
+  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
@@ -97,7 +100,7 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 
 .principle-summary {
   margin-top: 2px;
-  color: #fff;
+  color: #b4bdcf;
   font-size: 13px;
   line-height: 1.45;
 }

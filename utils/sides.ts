@@ -66,14 +66,14 @@ export const SIDE_SPARKLE_TYPES = {
   bottom: 'cross',
 } as const satisfies Record<SideType, string>;
 
-// Mirrors the per-side --surface-color values defined in TheCube.vue styles
+// Mirrors the per-side --side-accent values defined in TheCube.vue styles
 export const SIDE_COLORS: Record<SideType, string> = {
-  front: '#3973cc',
-  back: '#e05a5a',
-  left: '#e09c36',
-  right: '#36b374',
-  top: '#36b0c2',
-  bottom: '#9b6bc2',
+  front: '#5173ab',
+  back: '#c25b53',
+  left: '#af8a4b',
+  right: '#4f9e66',
+  top: '#45939c',
+  bottom: '#7867b0',
 };
 
 // Routes map sides to /1../6 by their position in SIDES

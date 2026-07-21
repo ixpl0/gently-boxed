@@ -139,7 +139,7 @@ defineProps<{
   left: 50%;
   width: 1600px;
   height: 1600px;
-  background: #0a0a0a05;
+  background: #13182605;
   transform: translate(-50%, -50%) translateZ(-500px);
   pointer-events: none;
 }
@@ -186,7 +186,12 @@ defineProps<{
   height: 100%;
   color: #fff;
   font-size: 45px;
-  background-color: #000;
+
+  /* Faces are dark slate panels tinted by the side accent; the accent itself lives
+     in the inner stroke and a faint glow, echoing the reference's glowing frames */
+  background-color: #232a3a;
+  background-image: linear-gradient(180deg, oklch(from var(--surface-color) calc(l + 0.03) c h) 0%, oklch(from var(--surface-color) calc(l - 0.03) c h) 100%);
+  box-shadow: inset 0 0 0 1px oklch(from var(--side-accent) 50% calc(c * 0.6) h), inset 0 0 90px oklch(from var(--side-accent) 45% c h / 15%);
 
   /* TEMPORARY diagnostic: flat collapses each face's subtree into a single
      texture, disabling all elevation — restore preserve-3d to bring it back */
@@ -196,39 +201,41 @@ defineProps<{
      skipping them halves the surfaces the compositor rasterizes during a spin */
   backface-visibility: hidden;
 
+  /* Each side owns a calm accent; the face surface is its dark low-chroma derivative,
+     so every panel/border/shadow derived from --surface-color stays in the same key */
   &.front {
-    --surface-color: #3973cc;
-    background: var(--surface-color);
+    --side-accent: #5173ab;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: translateZ(250px);
   }
 
   &.back {
-    --surface-color: #e05a5a;
-    background: var(--surface-color);
+    --side-accent: #c25b53;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.left {
-    --surface-color: #e09c36;
-    background: var(--surface-color);
+    --side-accent: #af8a4b;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
   }
 
   &.right {
-    --surface-color: #36b374;
-    background: var(--surface-color);
+    --side-accent: #4f9e66;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(90deg) rotateZ(-90deg) translateZ(250px);
   }
 
   &.top {
-    --surface-color: #36b0c2;
-    background: var(--surface-color);
+    --side-accent: #45939c;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateX(90deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.bottom {
-    --surface-color: #9b6bc2;
-    background: var(--surface-color);
+    --side-accent: #7867b0;
+    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateX(-90deg) rotateZ(180deg) translateZ(250px);
   }
 }

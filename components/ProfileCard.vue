@@ -64,6 +64,9 @@ const experienceYears = getFullYearsSince(CAREER_START_DATE);
 
 .name {
   margin: 0;
+
+  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
+  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
   font-size: 28px;
   font-weight: 700;
   line-height: 1.2;
@@ -81,7 +84,7 @@ const experienceYears = getFullYearsSince(CAREER_START_DATE);
 
 .description {
   margin: 16px 0 0;
-  color: #fff;
+  color: #b4bdcf;
   font-size: 15px;
   line-height: 1.5;
   text-align: center;

@@ -71,6 +71,9 @@ const PROJECTS: ProjectEntry[] = [
 
 .title {
   margin: 0;
+
+  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
+  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
@@ -132,13 +135,13 @@ const PROJECTS: ProjectEntry[] = [
 }
 
 .project-description {
-  color: #fff;
+  color: #b4bdcf;
   font-size: 13px;
   line-height: 1.4;
 }
 
 .project-tags {
-  color: #fff;
+  color: #9aa5bb;
   font-size: 12px;
 }
 </style>

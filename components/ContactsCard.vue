@@ -96,6 +96,9 @@ const CONTACT_LINKS: ContactLink[] = [
 
 .title {
   margin: 0;
+
+  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
+  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
