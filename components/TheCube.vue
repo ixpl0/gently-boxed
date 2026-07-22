@@ -59,10 +59,8 @@
           class="side right"
           :inert="side !== 'right'"
         >
-          <SparklesSparkles
-            v-if="side === 'right'"
-            type="asterisk"
-          />
+          <!-- No face sparkles here: the right side's ambience is the page-level
+               MeteorShower layers flying behind and in front of the cube -->
           <slot name="right">
             <UiText>
               fantastic

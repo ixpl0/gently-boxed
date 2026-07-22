@@ -1,7 +1,12 @@
 <template>
   <div class="main-page">
     <Transition name="sparkles-fade">
+      <MeteorShower
+        v-if="side === 'right'"
+        layer="back"
+      />
       <SparklesSparkles
+        v-else
         :key="side"
         :type="SIDE_SPARKLE_TYPES[side]"
         mirrored
@@ -33,6 +38,15 @@
         <LlmNoteCard />
       </template>
     </TheCube>
+
+    <!-- The near half of the meteor shower paints above the cube, so streaks
+         cross over the face while the back layer passes behind it -->
+    <Transition name="sparkles-fade">
+      <MeteorShower
+        v-if="side === 'right'"
+        layer="front"
+      />
+    </Transition>
 
     <SideNavigation :current-side="side" />
   </div>
