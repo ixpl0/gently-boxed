@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
 }
 
 .glitch-field[data-layer="back"] .glitch-bar {
-  background: #b9a8d666;
+  background: rgb(from var(--color-lavender) r g b / 40%);
 }
 
 /* A single slow interference wave rolling over the whole scene — cube included — at
@@ -317,7 +317,7 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   height: 140px;
-  background: linear-gradient(180deg, #7867b000 0%, #7867b01f 50%, #7867b000 100%);
+  background: linear-gradient(180deg, rgb(from var(--color-accent-bottom) r g b / 0%) 0%, rgb(from var(--color-accent-bottom) r g b / 12%) 50%, rgb(from var(--color-accent-bottom) r g b / 0%) 100%);
   transform: translate3d(0, -140px, 0);
   animation: interference-roll 8.5s linear infinite;
 }

@@ -79,7 +79,7 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 
 .principle-summary {
   margin-top: 2px;
-  color: #b4bdcf;
+  color: var(--color-text-muted);
   font-size: 13px;
   line-height: 1.45;
 }

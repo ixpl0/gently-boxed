@@ -2,6 +2,7 @@
   <div
     class="main-page"
     :class="{ 'frame-glitch': isFrameGlitchActive && side === 'bottom' }"
+    :style="{ '--page-background': SIDE_BACKGROUNDS[side] }"
   >
     <Transition name="sparkles-fade">
       <MeteorShower
@@ -71,7 +72,7 @@ import {
 } from 'vue';
 import type { DirectionType, SideType } from '~/utils/sides';
 import {
-  getRoutePathFromSide, getSideFromRouteParam, SIDE_NEIGHBORS, SIDE_SPARKLE_TYPES,
+  getRoutePathFromSide, getSideFromRouteParam, SIDE_BACKGROUNDS, SIDE_NEIGHBORS, SIDE_SPARKLE_TYPES,
 } from '~/utils/sides';
 
 definePageMeta({
@@ -151,7 +152,10 @@ onBeforeUnmount(() => {
   align-items: center;
   min-height: 100vh;
   min-height: 100dvh;
-  background: #131826;
+  background-color: var(--page-background);
+
+  /* Matches the cube's 2.1s spin so each side's backdrop flows into the next mid-rotation */
+  transition: background-color 2.1s;
 }
 
 /* Tears the whole rendered frame — background, cube, overlays — row-wise for one

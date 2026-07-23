@@ -259,6 +259,8 @@ onMounted(initializeSparkles);
 }
 
 .sparkle {
+  /* The faint outer glow shared by both renderers (SVG star and pseudo-element shapes) */
+  --sparkle-glow-faint: #ffffff4c;
   position: absolute;
   width: var(--sparkle-size);
   height: var(--sparkle-size);
@@ -272,7 +274,7 @@ onMounted(initializeSparkles);
   display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 var(--sparkle-glow-blur) #fff) drop-shadow(0 0 var(--sparkle-glow-spread) #ffffff4c);
+  filter: drop-shadow(0 0 var(--sparkle-glow-blur) #fff) drop-shadow(0 0 var(--sparkle-glow-spread) var(--sparkle-glow-faint));
 }
 
 .sparkle-shape {
@@ -284,7 +286,7 @@ onMounted(initializeSparkles);
   &::after {
     position: absolute;
     border: 0 solid #fff;
-    box-shadow: 0 0 var(--sparkle-glow-blur) #fff, 0 0 var(--sparkle-glow-spread) #ffffff4c;
+    box-shadow: 0 0 var(--sparkle-glow-blur) #fff, 0 0 var(--sparkle-glow-spread) var(--sparkle-glow-faint);
     content: "";
   }
 

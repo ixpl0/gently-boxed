@@ -187,7 +187,7 @@ onBeforeUnmount(() => {
   --rgb-flash-cycle: 3.8s;
   --rgb-flash-phase: -0.9s;
   margin-left: auto;
-  color: #b9a8d6;
+  color: var(--color-lavender);
   font-size: 11px;
 }
 
@@ -386,7 +386,7 @@ onBeforeUnmount(() => {
 /* Comment lines group tightly at the end, like a real terminal footer */
 .terminal-aside {
   margin-bottom: 0;
-  color: #b9a8d6;
+  color: var(--color-lavender);
 }
 
 /* The live "reply" is brighter than the comment line it grows out of; pre-wrap keeps

@@ -18,6 +18,23 @@ export default defineNuxtConfig({
           content: 'Frontend developer, team leader and AI harness architect. An interactive 3D business card.',
         },
       ],
+      link: [
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.googleapis.com',
+        },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: '',
+        },
+        // The poster type pair: Archivo Black for heavy display headlines,
+        // Oswald for bold condensed supporting lines (see --font-* in global.css)
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Archivo+Black&family=Oswald:wght@400;500;600&display=swap',
+        },
+      ],
     },
   },
 

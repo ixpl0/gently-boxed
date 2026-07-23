@@ -111,7 +111,7 @@ defineProps<{
   left: 50%;
   width: 1600px;
   height: 1600px;
-  background: #13182605;
+  background: rgb(from var(--color-ink) r g b / 2%);
   transform: translate(-50%, -50%) translateZ(-500px);
   pointer-events: none;
 }
@@ -171,39 +171,46 @@ defineProps<{
   backface-visibility: hidden;
 
   /* Each side owns a calm accent; the face surface is its dark low-chroma derivative,
-     so every panel/border/shadow derived from --surface-color stays in the same key */
+     so every panel/border/shadow derived from --surface-color stays in the same key.
+     The front is the poster-style exception: a bright radial gradient surface (accent
+     at the center, darkening to purple corners) with --side-ink typography on top.
+     --surface-color mixes the headline's local tone out of the gradient endpoints,
+     so UiText cast shadows still derive a plausible local color */
   &.front {
-    --side-accent: #5173ab;
-    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
+    --side-accent: var(--color-accent-front);
+    --side-ink: var(--color-ink);
+    --corner-color: #964e9b;
+    --surface-color: color-mix(in srgb, var(--side-accent) 70%, var(--corner-color) 30%);
+    background-image: radial-gradient(circle, var(--side-accent) 20%, var(--corner-color) 100%);
     transform: translateZ(250px);
   }
 
   &.back {
-    --side-accent: #c25b53;
+    --side-accent: var(--color-accent-back);
     --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.left {
-    --side-accent: #af8a4b;
+    --side-accent: var(--color-accent-left);
     --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
   }
 
   &.right {
-    --side-accent: #4f9e66;
+    --side-accent: var(--color-accent-right);
     --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateY(90deg) rotateZ(-90deg) translateZ(250px);
   }
 
   &.top {
-    --side-accent: #45939c;
+    --side-accent: var(--color-accent-top);
     --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateX(90deg) rotateZ(90deg) translateZ(250px);
   }
 
   &.bottom {
-    --side-accent: #7867b0;
+    --side-accent: var(--color-accent-bottom);
     --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
     transform: rotateX(-90deg) rotateZ(180deg) translateZ(250px);
   }

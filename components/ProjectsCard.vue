@@ -95,7 +95,7 @@ const PROJECTS: ProjectEntry[] = [
 }
 
 .project-description {
-  color: #b4bdcf;
+  color: var(--color-text-muted);
   font-size: 13px;
   line-height: 1.4;
 }

@@ -149,8 +149,8 @@ const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
   back: {
     count: 11,
     length: {
-      far: 60,
-      near: 210,
+      far: 75,
+      near: 260,
     },
     width: {
       far: 1,
@@ -169,15 +169,15 @@ const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
       near: 95,
     },
     duration: {
-      far: 2.5,
-      near: 1.6,
+      far: 2.17,
+      near: 1.39,
     },
   },
   front: {
     count: 2,
     length: {
-      far: 260,
-      near: 340,
+      far: 325,
+      near: 425,
     },
     width: {
       far: 2.5,
@@ -196,8 +196,8 @@ const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
       near: 130,
     },
     duration: {
-      far: 1.3,
-      near: 0.85,
+      far: 1.13,
+      near: 0.74,
     },
   },
 };
@@ -324,10 +324,12 @@ onMounted(initializeMeteors);
 /* The element itself is the tail: a thin rounded streak whose gradient fades upward
    away from the head; translate3d and rotate share the same per-meteor angle */
 .meteor {
+  /* The acid mint base; the brighter tip/mid stops are its hand-tuned derivatives */
+  --meteor-color: #38e897;
   position: absolute;
   width: var(--meteor-width);
   height: var(--meteor-length);
-  background: linear-gradient(to top, #f2f7ff 0%, #b9cdec 12%, #5173ab99 34%, #5173ab26 62%, #5173ab00 100%);
+  background: linear-gradient(to top, #9affce 0%, #62f7b2 12%, rgb(from var(--meteor-color) r g b / 60%) 34%, rgb(from var(--meteor-color) r g b / 15%) 62%, rgb(from var(--meteor-color) r g b / 0%) 100%);
   border-radius: calc(var(--meteor-width) / 2);
   opacity: 0;
   transform: translate3d(0, 0, 0) rotate(var(--meteor-tilt));
@@ -352,9 +354,9 @@ onMounted(initializeMeteors);
   left: 50%;
   width: calc(var(--meteor-width) * 2);
   height: calc(var(--meteor-width) * 2);
-  background: #f4f9ff;
+  background: #b0ffdb;
   border-radius: 50%;
-  box-shadow: 0 0 6px 1px #dcecffcc, 0 0 16px 5px #5173ab59;
+  box-shadow: 0 0 6px 1px #6effbccc, 0 0 16px 5px rgb(from var(--meteor-color) r g b / 35%);
   transform: translateX(-50%);
   content: "";
 }

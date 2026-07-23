@@ -64,14 +64,26 @@ export const SIDE_SPARKLE_TYPES = {
   bottom: 'cross',
 } as const satisfies Record<SideType, string>;
 
-// Mirrors the per-side --side-accent values defined in TheCube.vue styles
+// Per-side accents for UI outside the cube (navigation dots); the hex values live
+// once in the :root palette in assets/css/global.css, shared with TheCube's faces
 export const SIDE_COLORS: Record<SideType, string> = {
-  front: '#5173ab',
-  back: '#c25b53',
-  left: '#af8a4b',
-  right: '#4f9e66',
-  top: '#45939c',
-  bottom: '#7867b0',
+  front: 'var(--color-accent-front)',
+  back: 'var(--color-accent-back)',
+  left: 'var(--color-accent-left)',
+  right: 'var(--color-accent-right)',
+  top: 'var(--color-accent-top)',
+  bottom: 'var(--color-accent-bottom)',
+};
+
+// Per-side page backgrounds behind the cube; .main-page crossfades between them in
+// sync with the spin. Sides without their own color yet keep the shared dark ink base
+export const SIDE_BACKGROUNDS: Record<SideType, string> = {
+  front: 'var(--color-page-front)',
+  back: 'var(--color-ink)',
+  left: 'var(--color-ink)',
+  right: 'var(--color-ink)',
+  top: 'var(--color-ink)',
+  bottom: 'var(--color-ink)',
 };
 
 // Routes map sides to /1../6 by their position in SIDES
