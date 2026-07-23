@@ -2,11 +2,6 @@
   <div class="cube-wrapper">
     <div class="cube-pivot">
       <div
-        class="bounds-plane"
-        aria-hidden="true"
-      />
-
-      <div
         class="cube"
         :data-side="side"
       >
@@ -23,9 +18,12 @@
           class="side back"
           :inert="side !== 'back'"
         >
-          <SparklesSparkles
+          <!-- The face half of the back side's ambience: still print-sheet
+               furniture on the calm paper (the water itself lives only in the
+               page layer mounted by pages/[[side]].vue) -->
+          <RippleField
             v-if="side === 'back'"
-            type="cross"
+            layer="face"
           />
           <slot name="back" />
         </div>
@@ -93,27 +91,11 @@ defineProps<{
   perspective: 1000px;
 }
 
-/* Hosts the cube and the bounds plane at a fixed shared depth */
+/* Hosts the cube at a fixed depth */
 .cube-pivot {
   position: relative;
   transform: translateZ(-250px);
   transform-style: preserve-3d;
-}
-
-/* An invisible oversized backdrop that pins the 3D scene's projected bounds:
-   the compositor sizes its render surface by projected content, so without this
-   the surface regrows mid-spin (the silhouette is widest around 45deg) and the
-   freshly allocated tiles can flash garbage. Deep enough to never split planes
-   with the swept cube corners */
-.bounds-plane {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 1600px;
-  height: 1600px;
-  background: rgb(from var(--color-ink) r g b / 2%);
-  transform: translate(-50%, -50%) translateZ(-500px);
-  pointer-events: none;
 }
 
 .cube {
@@ -185,9 +167,13 @@ defineProps<{
     transform: translateZ(250px);
   }
 
+  /* The back is the wet-print exception: a uniform pale acid-yellow sheet (the
+     paper the CMYK water washes over) carrying --side-ink typography; kept one
+     flat solid so the text stays readable under the face's faint ripple */
   &.back {
     --side-accent: var(--color-accent-back);
-    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
+    --side-ink: var(--color-ink);
+    --surface-color: color-mix(in oklab, var(--color-back-yellow) 80%, #fff 20%);
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 

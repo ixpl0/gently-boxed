@@ -4,15 +4,23 @@
   --font-poster: "Archivo Black", system-ui, sans-serif;
   --font-condensed: "Oswald", "Arial Narrow", system-ui, sans-serif;
 
+  /* The back side's print pair, same head: a signage display face for the
+     misregistered headline and a technical grotesk for the small print */
+  --font-signage: "Bungee", "Arial Black", system-ui, sans-serif;
+  --font-grotesk: "Space Grotesk", system-ui, sans-serif;
+
   /* The palette's single source of truth: every shared color is defined once here,
      and components either consume the var directly or derive alpha/tint variants
      via relative color syntax and color-mix(). Plain #fff stays inline */
   --color-ink: #241f42; /* dark ink typography; doubles as the base page background */
   --color-page-front: #9b509d; /* page backdrop behind the front side */
+  --color-page-back: #4ee5ff; /* cyan pool behind the back side */
   --color-text-muted: #b4bdcf; /* secondary text on the dark card faces */
   --color-lavender: #b9a8d6; /* the bottom side's terminal text and glitch-strip tint */
   --color-accent-front: #df8eeb;
-  --color-accent-back: #c25b53;
+  --color-accent-back: #ff2bd1; /* the back side's magenta ink; doubles as its accent */
+  --color-back-cyan: #00d7f2; /* the cyan plate of the back side's CMYK set */
+  --color-back-yellow: #fcee0a; /* the yellow plate: base of the back side's acid paper */
   --color-accent-left: #af8a4b;
   --color-accent-right: #4f9e66;
   --color-accent-top: #45939c;

@@ -54,7 +54,9 @@ export const SIDE_NEIGHBORS: Record<SideType, Record<DirectionType, SideType>> =
   },
 };
 
-// Mirrors the per-side SparklesSparkles types rendered inside TheCube.vue
+// Mirrors the per-side SparklesSparkles types rendered inside TheCube.vue; front,
+// back and bottom carry dedicated ambience components instead of sparkles and
+// keep placeholder entries only to satisfy the per-side map shape
 export const SIDE_SPARKLE_TYPES = {
   front: 'star',
   back: 'cross',
@@ -68,7 +70,7 @@ export const SIDE_SPARKLE_TYPES = {
 // once in the :root palette in assets/css/global.css, shared with TheCube's faces
 export const SIDE_COLORS: Record<SideType, string> = {
   front: 'var(--color-accent-front)',
-  back: 'var(--color-accent-back)',
+  back: 'var(--color-back-yellow)',
   left: 'var(--color-accent-left)',
   right: 'var(--color-accent-right)',
   top: 'var(--color-accent-top)',
@@ -79,7 +81,7 @@ export const SIDE_COLORS: Record<SideType, string> = {
 // sync with the spin. Sides without their own color yet keep the shared dark ink base
 export const SIDE_BACKGROUNDS: Record<SideType, string> = {
   front: 'var(--color-page-front)',
-  back: 'var(--color-ink)',
+  back: 'var(--color-page-back)',
   left: 'var(--color-ink)',
   right: 'var(--color-ink)',
   top: 'var(--color-ink)',

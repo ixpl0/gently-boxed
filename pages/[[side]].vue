@@ -13,6 +13,10 @@
         v-else-if="side === 'bottom'"
         layer="back"
       />
+      <RippleField
+        v-else-if="side === 'back'"
+        layer="page"
+      />
       <SparklesSparkles
         v-else
         :key="side"
