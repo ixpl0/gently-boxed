@@ -12,16 +12,17 @@
   /* The palette's single source of truth: every shared color is defined once here,
      and components either consume the var directly or derive alpha/tint variants
      via relative color syntax and color-mix(). Plain #fff stays inline */
-  --color-ink: #241f42; /* dark ink typography; doubles as the base page background */
-  --color-page-front: #9b509d; /* page backdrop behind the front side */
+  --color-ink: #3c3772; /* dark ink typography; doubles as the base page background */
+  --color-page-front: #a8455f; /* page backdrop behind the front side */
   --color-page-back: #4ee5ff; /* cyan pool behind the back side */
   --color-text-muted: #b4bdcf; /* secondary text on the dark card faces */
-  --color-lavender: #b9a8d6; /* the bottom side's terminal text and glitch-strip tint */
-  --color-accent-front: #df8eeb;
-  --color-meteor-mint: #38e897; /* the front meteor streaks and the light they cast on the cube */
+  --color-terminal: #b9a8d6; /* the bottom side's terminal text and glitch-strip tint */
+  --color-accent-front: #f188ae;
+  --color-front-corner: #a54461; /* the darkened corners of the front poster gradient */
+  --color-meteor: #07ccff; /* the front meteor streaks and the light they cast on the cube */
   --color-accent-back: #ff2bd1; /* the back side's magenta ink; doubles as its accent */
-  --color-back-cyan: #00d7f2; /* the cyan plate of the back side's CMYK set */
-  --color-back-yellow: #fcee0a; /* the yellow plate: base of the back side's acid paper */
+  --color-back-plate: #00d7f2; /* the back side's second CMYK ink plate, printed as process cyan */
+  --color-back-paper: #fcee0a; /* the back side's paper base, doubling as its CMYK yellow plate */
   --color-accent-left: #af8a4b;
   --color-accent-right: #4f9e66;
   --color-accent-top: #45939c;

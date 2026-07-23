@@ -356,13 +356,14 @@ onBeforeUnmount(() => {
 /* The element itself is the tail: a thin rounded streak whose gradient fades upward
    away from the head; translate3d and rotate share the same per-meteor angle */
 .meteor {
-  /* The acid mint base, shared with MeteorGlow's cast light via the global palette;
-     the brighter tip/mid stops are its hand-tuned derivatives */
-  --meteor-color: var(--color-meteor-mint);
+  /* The meteor base color, shared with MeteorGlow's cast light via the global palette;
+     the brighter tip/mid/head stops derive from it via relative HSL lifts (matching
+     the previously hand-tuned hexes), so retuning the base recolors the whole meteor */
+  --meteor-color: var(--color-meteor);
   position: absolute;
   width: var(--meteor-width);
   height: var(--meteor-length);
-  background: linear-gradient(to top, #9affce 0%, #62f7b2 12%, rgb(from var(--meteor-color) r g b / 60%) 34%, rgb(from var(--meteor-color) r g b / 15%) 62%, rgb(from var(--meteor-color) r g b / 0%) 100%);
+  background: linear-gradient(to top, hsl(from var(--meteor-color) h calc(s + 21) calc(l + 24)) 0%, hsl(from var(--meteor-color) h calc(s + 11) calc(l + 11)) 12%, rgb(from var(--meteor-color) r g b / 60%) 34%, rgb(from var(--meteor-color) r g b / 15%) 62%, rgb(from var(--meteor-color) r g b / 0%) 100%);
   border-radius: calc(var(--meteor-width) / 2);
   opacity: 0;
   transform: translate3d(0, 0, 0) rotate(var(--meteor-tilt));
@@ -387,9 +388,9 @@ onBeforeUnmount(() => {
   left: 50%;
   width: calc(var(--meteor-width) * 2);
   height: calc(var(--meteor-width) * 2);
-  background: #b0ffdb;
+  background: hsl(from var(--meteor-color) h calc(s + 21) calc(l + 28));
   border-radius: 50%;
-  box-shadow: 0 0 6px 1px #6effbccc, 0 0 16px 5px rgb(from var(--meteor-color) r g b / 35%);
+  box-shadow: 0 0 6px 1px hsl(from var(--meteor-color) h calc(s + 21) calc(l + 15) / 80%), 0 0 16px 5px rgb(from var(--meteor-color) r g b / 35%);
   transform: translateX(-50%);
   content: "";
 }

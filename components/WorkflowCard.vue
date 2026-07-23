@@ -126,7 +126,7 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 }
 
 .principle-title[data-plate="cyan"] {
-  --plate-color: var(--color-back-cyan);
+  --plate-color: var(--color-back-plate);
 }
 
 .principle-title[data-plate="magenta"] {
@@ -162,11 +162,11 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 
 @keyframes misprint-swim {
   0% {
-    text-shadow: 3px 2px 0 rgb(from var(--color-back-cyan) r g b / 70%), -3px -1px 0 rgb(from var(--color-accent-back) r g b / 65%);
+    text-shadow: 3px 2px 0 rgb(from var(--color-back-plate) r g b / 70%), -3px -1px 0 rgb(from var(--color-accent-back) r g b / 65%);
   }
 
   100% {
-    text-shadow: 2px 3px 0 rgb(from var(--color-back-cyan) r g b / 70%), -2px -3px 0 rgb(from var(--color-accent-back) r g b / 65%);
+    text-shadow: 2px 3px 0 rgb(from var(--color-back-plate) r g b / 70%), -2px -3px 0 rgb(from var(--color-accent-back) r g b / 65%);
   }
 }
 </style>

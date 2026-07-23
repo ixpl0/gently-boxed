@@ -14,7 +14,7 @@
           <slot name="front" />
 
           <!-- Painted over the face content: the nearest front-layer meteors cast
-               a moving pool of mint light onto the poster as they cross the cube -->
+               a moving pool of colored light onto the poster as they cross the cube -->
           <MeteorGlow v-if="side === 'front'" />
         </div>
 
@@ -159,13 +159,13 @@ defineProps<{
   /* Each side owns a calm accent; the face surface is its dark low-chroma derivative,
      so every panel/border/shadow derived from --surface-color stays in the same key.
      The front is the poster-style exception: a bright radial gradient surface (accent
-     at the center, darkening to purple corners) with --side-ink typography on top.
+     at the center, darkening toward the corners) with --side-ink typography on top.
      --surface-color mixes the headline's local tone out of the gradient endpoints,
      so UiText cast shadows still derive a plausible local color */
   &.front {
     --side-accent: var(--color-accent-front);
     --side-ink: var(--color-ink);
-    --corner-color: #964e9b;
+    --corner-color: var(--color-front-corner);
     --surface-color: color-mix(in srgb, var(--side-accent) 70%, var(--corner-color) 30%);
     background-image: radial-gradient(circle, var(--side-accent) 20%, var(--corner-color) 100%);
     transform: translateZ(250px);
@@ -177,7 +177,7 @@ defineProps<{
   &.back {
     --side-accent: var(--color-accent-back);
     --side-ink: var(--color-ink);
-    --surface-color: color-mix(in oklab, var(--color-back-yellow) 80%, #fff 20%);
+    --surface-color: color-mix(in oklab, var(--color-back-paper) 80%, #fff 20%);
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 

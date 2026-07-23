@@ -269,7 +269,7 @@ defineProps<Props>();
 }
 
 .color-cell[data-cell="cyan"] {
-  background: var(--color-back-cyan);
+  background: var(--color-back-plate);
 }
 
 .color-cell[data-cell="magenta"] {
@@ -277,7 +277,7 @@ defineProps<Props>();
 }
 
 .color-cell[data-cell="yellow"] {
-  background: var(--color-back-yellow);
+  background: var(--color-back-paper);
 }
 
 .color-cell[data-cell="key"] {
@@ -285,7 +285,7 @@ defineProps<Props>();
 }
 
 .color-cell[data-cell="cyan-tint"] {
-  background: rgb(from var(--color-back-cyan) r g b / 45%);
+  background: rgb(from var(--color-back-plate) r g b / 45%);
 }
 
 .color-cell[data-cell="magenta-tint"] {
@@ -293,7 +293,7 @@ defineProps<Props>();
 }
 
 .color-cell[data-cell="yellow-tint"] {
-  background: rgb(from var(--color-back-yellow) r g b / 45%);
+  background: rgb(from var(--color-back-paper) r g b / 45%);
 }
 
 .warp-filter-defs {

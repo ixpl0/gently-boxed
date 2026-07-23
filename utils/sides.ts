@@ -70,7 +70,7 @@ export const SIDE_SPARKLE_TYPES = {
 // once in the :root palette in assets/css/global.css, shared with TheCube's faces
 export const SIDE_COLORS: Record<SideType, string> = {
   front: 'var(--color-accent-front)',
-  back: 'var(--color-back-yellow)',
+  back: 'var(--color-back-paper)',
   left: 'var(--color-accent-left)',
   right: 'var(--color-accent-right)',
   top: 'var(--color-accent-top)',

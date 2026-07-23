@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
 }
 
 .glitch-field[data-layer="back"] .glitch-bar {
-  background: rgb(from var(--color-lavender) r g b / 40%);
+  background: rgb(from var(--color-terminal) r g b / 40%);
 }
 
 /* A single slow interference wave rolling over the whole scene — cube included — at

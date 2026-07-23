@@ -226,15 +226,15 @@ onBeforeUnmount(() => {
 }
 
 /* One soft patch per front meteor: a hot near-white core under the streak head inside
-   a broader mint wash along the tail; screen-blended so it lightens the poster
+   a broader colored wash along the tail; screen-blended so it lightens the poster
    gradient and the ink typography the way real light would. Only transform/opacity
    ever change per frame, so updates stay compositor-only */
 .glow-light {
-  --glow-core-color: color-mix(in srgb, var(--color-meteor-mint) 45%, #fff 55%);
+  --glow-core-color: color-mix(in srgb, var(--color-meteor) 45%, #fff 55%);
   position: absolute;
   top: 0;
   left: 0;
-  background: radial-gradient(40% 26% at 50% 66%, rgb(from var(--glow-core-color) r g b / 60%) 0%, rgb(from var(--glow-core-color) r g b / 0%) 100%), radial-gradient(50% 48% at 50% 52%, rgb(from var(--color-meteor-mint) r g b / 28%) 0%, rgb(from var(--color-meteor-mint) r g b / 0%) 78%);
+  background: radial-gradient(40% 26% at 50% 66%, rgb(from var(--glow-core-color) r g b / 60%) 0%, rgb(from var(--glow-core-color) r g b / 0%) 100%), radial-gradient(50% 48% at 50% 52%, rgb(from var(--color-meteor) r g b / 28%) 0%, rgb(from var(--color-meteor) r g b / 0%) 78%);
   mix-blend-mode: screen;
   opacity: 0;
   will-change: transform, opacity;
