@@ -132,7 +132,6 @@ onBeforeUnmount(() => {
   margin-top: 18px;
   font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
   background: oklch(from var(--surface-color) calc(l - 0.08) c h);
-  border: 1px solid oklch(from var(--surface-color) calc(l + 0.08) c h);
   border-radius: 12px;
   corner-shape: squircle;
   transform: translateZ(var(--elevation-step));

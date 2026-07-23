@@ -1,37 +1,30 @@
 <template>
-  <div class="workflow-content">
-    <UiCard class="workflow-card">
-      <UiText>
-        <h2 class="title">
-          How I work
-        </h2>
-      </UiText>
+  <div class="workflow-card">
+    <UiTitle>How I work</UiTitle>
 
-      <div class="principles">
-        <div
-          v-for="principle in PRINCIPLES"
-          :key="principle.title"
-          class="principle"
-        >
-          <div class="principle-title">
-            {{ principle.title }}
-          </div>
+    <div class="principles">
+      <div
+        v-for="principle in PRINCIPLES"
+        :key="principle.title"
+      >
+        <div class="principle-title">
+          {{ principle.title }}
+        </div>
 
-          <div class="principle-summary">
-            {{ principle.summary }}
-          </div>
+        <div class="principle-summary">
+          {{ principle.summary }}
         </div>
       </div>
+    </div>
 
-      <div class="tools">
-        <UiBadge
-          v-for="tool in TOOLS"
-          :key="tool"
-        >
-          {{ tool }}
-        </UiBadge>
-      </div>
-    </UiCard>
+    <div class="tools">
+      <span
+        v-for="tool in TOOLS"
+        :key="tool"
+      >
+        {{ tool }}
+      </span>
+    </div>
   </div>
 </template>
 
@@ -61,34 +54,20 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 </script>
 
 <style scoped>
-.workflow-content {
+.workflow-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform-style: preserve-3d;
-}
-
-.workflow-card {
   width: 400px;
-}
-
-.title {
-  margin: 0;
-
-  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
-  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
+  transform-style: preserve-3d;
 }
 
 .principles {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 18px;
-  transform-style: preserve-3d;
+  align-self: stretch;
+  gap: 18px;
+  margin-top: 28px;
 }
 
 .principle-title {
@@ -105,12 +84,15 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
   line-height: 1.45;
 }
 
+/* Tools are bare text separated by wide gaps, echoing the roles row on the front face */
 .tools {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin-top: 18px;
-  transform-style: preserve-3d;
+  gap: 8px 24px;
+  margin-top: 26px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
 }
 </style>

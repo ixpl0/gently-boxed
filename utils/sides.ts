@@ -11,9 +11,7 @@ export const SIDE_LABELS: Record<SideType, string> = {
   bottom: '???',
 };
 
-export const DIRECTIONS = ['left', 'right', 'up', 'down'] as const;
-
-export type DirectionType = typeof DIRECTIONS[number];
+export type DirectionType = 'left' | 'right' | 'up' | 'down';
 
 // Which face lies in each screen direction for every fixed orientation in TheCube.vue,
 // derived from the per-side rotation matrices — spinning toward a direction shows that face

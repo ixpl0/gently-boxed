@@ -1,35 +1,31 @@
 <template>
-  <div class="contacts-content">
-    <UiCard class="contacts-card">
-      <UiText>
-        <h2 class="title">
-          Contacts
-        </h2>
-      </UiText>
+  <div class="contacts-card">
+    <UiTitle>Contacts</UiTitle>
 
-      <div class="links">
-        <UiLinkButton
-          v-for="link in CONTACT_LINKS"
-          :key="link.label"
-          class="contact-link"
-          :href="link.href"
+    <div class="links">
+      <a
+        v-for="link in CONTACT_LINKS"
+        :key="link.label"
+        class="contact-link"
+        :href="link.href"
+        :target="opensInNewTab(link.href) ? '_blank' : undefined"
+        :rel="opensInNewTab(link.href) ? 'noopener noreferrer' : undefined"
+      >
+        <svg
+          class="link-icon"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            class="link-icon"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              :d="link.iconPath"
-              fill="currentColor"
-            />
-          </svg>
+          <path
+            :d="link.iconPath"
+            fill="currentColor"
+          />
+        </svg>
 
-          <span class="link-label">{{ link.label }}</span>
-        </UiLinkButton>
-      </div>
-    </UiCard>
+        <span class="link-label">{{ link.label }}</span>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -80,42 +76,44 @@ const CONTACT_LINKS: ContactLink[] = [
     iconPath: CALENDAR_ICON_PATH,
   },
 ];
+
+// mailto stays in the same tab to trigger the mail client; everything else opens a new tab
+const opensInNewTab = (href: string): boolean => !href.startsWith('mailto:');
 </script>
 
 <style scoped>
-.contacts-content {
+.contacts-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   transform-style: preserve-3d;
 }
 
-.contacts-card {
-  width: 400px;
-}
-
-.title {
-  margin: 0;
-
-  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
-  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-}
-
 .links {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-top: 18px;
+  grid-template-columns: repeat(2, auto);
+  justify-items: start;
+  gap: 18px 56px;
+  margin-top: 28px;
   transform-style: preserve-3d;
 }
 
+/* A bare text link: no panel, no border — hover answers with an accent tint and a lift */
 .contact-link {
-  justify-content: flex-start;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateZ(var(--elevation-step));
+  transition: all 0.2s;
+
+  &:hover {
+    color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
+    transform: translateZ(calc(var(--elevation-step) + 10px));
+  }
 }
 
 .link-icon {

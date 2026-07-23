@@ -1,32 +1,25 @@
 <template>
-  <div class="experience-content">
-    <UiCard class="experience-card">
-      <UiText>
-        <h2 class="title">
-          Experience
-        </h2>
-      </UiText>
+  <div class="experience-card">
+    <UiTitle>Experience</UiTitle>
 
-      <div class="timeline">
-        <div
-          v-for="entry in EXPERIENCE_ENTRIES"
-          :key="entry.period"
-          class="entry"
-        >
-          <UiBadge>{{ entry.period }}</UiBadge>
+    <div class="timeline">
+      <div
+        v-for="entry in EXPERIENCE_ENTRIES"
+        :key="entry.period"
+      >
+        <div class="entry-period">
+          {{ entry.period }}
+        </div>
 
-          <div>
-            <div class="entry-role">
-              {{ entry.role }} &middot; {{ entry.company }}
-            </div>
+        <div class="entry-role">
+          {{ entry.role }} &middot; {{ entry.company }}
+        </div>
 
-            <div class="entry-summary">
-              {{ entry.summary }}
-            </div>
-          </div>
+        <div class="entry-summary">
+          {{ entry.summary }}
         </div>
       </div>
-    </UiCard>
+    </div>
   </div>
 </template>
 
@@ -62,45 +55,32 @@ const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
 </script>
 
 <style scoped>
-.experience-content {
+.experience-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform-style: preserve-3d;
-}
-
-.experience-card {
   width: 400px;
-}
-
-.title {
-  margin: 0;
-
-  /* Headings take a pastel tint of the side accent, like the reference's colored titles */
-  color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
+  transform-style: preserve-3d;
 }
 
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 18px;
-  transform-style: preserve-3d;
+  align-self: stretch;
+  gap: 22px;
+  margin-top: 28px;
 }
 
-.entry {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  transform-style: preserve-3d;
+/* Bare text entries: the accent-tinted period line alone structures the timeline */
+.entry-period {
+  color: oklch(from var(--side-accent) 75% calc(c * 0.5) h);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .entry-role {
+  margin-top: 4px;
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -108,7 +88,7 @@ const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
 }
 
 .entry-summary {
-  margin-top: 2px;
+  margin-top: 3px;
   color: #b4bdcf;
   font-size: 13px;
   line-height: 1.45;

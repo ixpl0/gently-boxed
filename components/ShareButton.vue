@@ -240,11 +240,6 @@ onBeforeUnmount(() => {
   transform: translateZ(var(--elevation-step)) scale(0.95);
 }
 
-.share-button:active::before,
-.share-button:hover:active::before {
-  transform: translateZ(calc(2px - var(--elevation-step)));
-}
-
 .share-content {
   display: flex;
   justify-content: center;

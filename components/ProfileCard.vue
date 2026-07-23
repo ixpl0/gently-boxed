@@ -1,23 +1,23 @@
 <template>
   <div class="front-content">
-    <UiCard class="profile-card">
-      <UiText>
-        <h1 class="name">
-          Kashcheev Andrei
-        </h1>
-      </UiText>
+    <UiText>
+      <h1 class="name">
+        Kashcheev Andrei
+      </h1>
+    </UiText>
 
+    <UiText>
       <div class="specializations">
-        <UiBadge>AI Harness Architect</UiBadge>
-        <UiBadge>Frontend Developer</UiBadge>
-        <UiBadge>Team Leader</UiBadge>
+        <span>AI Harness Architect</span>
+        <span>Frontend Developer</span>
+        <span>Team Leader</span>
       </div>
+    </UiText>
 
-      <div class="description">
-        <div>{{ experienceYears }} years of experience</div>
-        <div>{{ age }} years old &middot; Tbilisi, Georgia</div>
-      </div>
-    </UiCard>
+    <div class="description">
+      <div>{{ experienceYears }} years of experience</div>
+      <div>{{ age }} years old &middot; Tbilisi, Georgia</div>
+    </div>
 
     <div class="profile-actions">
       <UiButton @click="emit('openContacts')">
@@ -51,15 +51,14 @@ const experienceYears = getFullYearsSince(CAREER_START_DATE);
 </script>
 
 <style scoped>
+/* No card panel here: the face itself is the surface, and generous empty
+   margins around the centered column carry the clean, spacious look */
 .front-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 420px;
   transform-style: preserve-3d;
-}
-
-.profile-card {
-  width: 320px;
 }
 
 .name {
@@ -67,34 +66,39 @@ const experienceYears = getFullYearsSince(CAREER_START_DATE);
 
   /* Headings take a pastel tint of the side accent, like the reference's colored titles */
   color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: 0.01em;
   text-align: center;
 }
 
+/* Roles are bare text: pill backgrounds are gone, so a wide column gap alone
+   separates them, and the wrap row gap stays modest for narrow screens */
 .specializations {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-  transform-style: preserve-3d;
+  gap: 8px 28px;
+  margin-top: 22px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .description {
-  margin: 16px 0 0;
+  margin: 26px 0 0;
   color: #b4bdcf;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.7;
   text-align: center;
 }
 
 .profile-actions {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 16px;
+  margin-top: 44px;
   transform-style: preserve-3d;
 }
 </style>

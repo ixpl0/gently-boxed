@@ -16,11 +16,7 @@
         >
           <!-- No face sparkles here: the front side's ambience is the page-level
                MeteorShower layers flying behind and in front of the cube -->
-          <slot name="front">
-            <UiText>
-              incredible
-            </UiText>
-          </slot>
+          <slot name="front" />
         </div>
 
         <div
@@ -31,11 +27,7 @@
             v-if="side === 'back'"
             type="cross"
           />
-          <slot name="back">
-            <UiText>
-              unbelievable
-            </UiText>
-          </slot>
+          <slot name="back" />
         </div>
 
         <div
@@ -46,11 +38,7 @@
             v-if="side === 'left'"
             type="plus"
           />
-          <slot name="left">
-            <UiText>
-              amazing
-            </UiText>
-          </slot>
+          <slot name="left" />
         </div>
 
         <div
@@ -61,11 +49,7 @@
             v-if="side === 'right'"
             type="star"
           />
-          <slot name="right">
-            <UiText>
-              fantastic
-            </UiText>
-          </slot>
+          <slot name="right" />
         </div>
 
         <div
@@ -76,11 +60,7 @@
             v-if="side === 'top'"
             type="diamond"
           />
-          <slot name="top">
-            <UiText>
-              magnificent
-            </UiText>
-          </slot>
+          <slot name="top" />
         </div>
 
         <div
@@ -89,11 +69,7 @@
         >
           <!-- No face sparkles here: the bottom side's ambience is the page-level
                GlitchField layers glitching behind and over the cube -->
-          <slot name="bottom">
-            <UiText>
-              wonderful
-            </UiText>
-          </slot>
+          <slot name="bottom" />
         </div>
       </div>
     </div>
@@ -181,13 +157,10 @@ defineProps<{
   width: 100%;
   height: 100%;
   color: #fff;
-  font-size: 45px;
 
-  /* Faces are dark slate panels tinted by the side accent; the accent itself lives
-     in the inner stroke and a faint glow, echoing the reference's glowing frames */
-  background-color: #232a3a;
-  background-image: linear-gradient(180deg, oklch(from var(--surface-color) calc(l + 0.03) c h) 0%, oklch(from var(--surface-color) calc(l - 0.03) c h) 100%);
-  box-shadow: inset 0 0 0 1px oklch(from var(--side-accent) 50% calc(c * 0.6) h), inset 0 0 90px oklch(from var(--side-accent) 45% c h / 15%);
+  /* Faces are flat solid panels: no stroke, no gradient — the side accent survives
+     only as the low-chroma surface tint, and edges read from contrast with the page */
+  background-color: var(--surface-color);
 
   /* TEMPORARY diagnostic: flat collapses each face's subtree into a single
      texture, disabling all elevation — restore preserve-3d to bring it back */

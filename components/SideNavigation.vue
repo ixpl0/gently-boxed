@@ -50,7 +50,6 @@ defineProps<{
   width: 12px;
   height: 12px;
   background: var(--dot-color);
-  border: 1px solid #fff3;
   border-radius: 50%;
   opacity: 0.45;
   transition: all 0.2s;
@@ -62,7 +61,6 @@ defineProps<{
 }
 
 .dot.active {
-  border-color: #fff8;
   box-shadow: 0 0 10px var(--dot-color);
   opacity: 1;
   transform: scale(1.25);
