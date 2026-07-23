@@ -5,7 +5,7 @@
   >
     <Transition name="sparkles-fade">
       <MeteorShower
-        v-if="side === 'right'"
+        v-if="side === 'front'"
         layer="back"
       />
       <GlitchField
@@ -51,7 +51,7 @@
          glitch layer likewise corrupts the cube itself via backdrop-filter bars -->
     <Transition name="sparkles-fade">
       <MeteorShower
-        v-if="side === 'right'"
+        v-if="side === 'front'"
         layer="front"
       />
       <GlitchField

@@ -61,7 +61,7 @@ export const SIDE_SPARKLE_TYPES = {
   front: 'star',
   back: 'cross',
   left: 'plus',
-  right: 'asterisk',
+  right: 'star',
   top: 'diamond',
   bottom: 'cross',
 } as const satisfies Record<SideType, string>;

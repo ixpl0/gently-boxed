@@ -14,10 +14,8 @@
           class="side front"
           :inert="side !== 'front'"
         >
-          <SparklesSparkles
-            v-if="side === 'front'"
-            type="star"
-          />
+          <!-- No face sparkles here: the front side's ambience is the page-level
+               MeteorShower layers flying behind and in front of the cube -->
           <slot name="front">
             <UiText>
               incredible
@@ -59,8 +57,10 @@
           class="side right"
           :inert="side !== 'right'"
         >
-          <!-- No face sparkles here: the right side's ambience is the page-level
-               MeteorShower layers flying behind and in front of the cube -->
+          <SparklesSparkles
+            v-if="side === 'right'"
+            type="star"
+          />
           <slot name="right">
             <UiText>
               fantastic
