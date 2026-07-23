@@ -3,6 +3,7 @@
     <div
       v-for="(meteor, index) in meteors"
       :key="`meteor-${index}`"
+      ref="meteorElements"
       class="meteor"
       :data-variant="meteor.variant"
       :style="{
@@ -24,7 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import {
+  nextTick, onBeforeUnmount, onMounted, ref,
+} from 'vue';
+import { useMeteorLightSources } from '~/composables/useMeteorLightSources';
 
 type MeteorLayerType = 'back' | 'front';
 
@@ -205,6 +209,7 @@ const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
 const props = defineProps<Props>();
 
 const meteors = ref<MeteorData[]>([]);
+const meteorElements = ref<HTMLElement[]>([]);
 
 const layerConfig = LAYER_CONFIGS[props.layer];
 
@@ -310,7 +315,34 @@ const initializeMeteors = (): void => {
   meteors.value = Array.from({ length: layerConfig.count }, () => createMeteor());
 };
 
-onMounted(initializeMeteors);
+const { publish, retract } = useMeteorLightSources();
+
+// Kept to retract exactly what this instance published: a fresh front shower may
+// have re-published by the time a leave-transitioned old one finally unmounts
+let publishedLightSources: readonly HTMLElement[] | undefined;
+
+onMounted(() => {
+  initializeMeteors();
+
+  if (props.layer !== 'front') {
+    return;
+  }
+
+  // The couple of near streaks double as light sources: MeteorGlow inside the cube's
+  // front face reads these elements every frame to cast their light onto the poster.
+  // Collected after the tick that renders the freshly initialized meteors
+  void nextTick()
+    .then(() => {
+      publishedLightSources = [...meteorElements.value];
+      publish(publishedLightSources);
+    });
+});
+
+onBeforeUnmount(() => {
+  if (publishedLightSources !== undefined) {
+    retract(publishedLightSources);
+  }
+});
 </script>
 
 <style scoped>
@@ -324,8 +356,9 @@ onMounted(initializeMeteors);
 /* The element itself is the tail: a thin rounded streak whose gradient fades upward
    away from the head; translate3d and rotate share the same per-meteor angle */
 .meteor {
-  /* The acid mint base; the brighter tip/mid stops are its hand-tuned derivatives */
-  --meteor-color: #38e897;
+  /* The acid mint base, shared with MeteorGlow's cast light via the global palette;
+     the brighter tip/mid stops are its hand-tuned derivatives */
+  --meteor-color: var(--color-meteor-mint);
   position: absolute;
   width: var(--meteor-width);
   height: var(--meteor-length);

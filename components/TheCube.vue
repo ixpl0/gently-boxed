@@ -12,6 +12,10 @@
           <!-- No face sparkles here: the front side's ambience is the page-level
                MeteorShower layers flying behind and in front of the cube -->
           <slot name="front" />
+
+          <!-- Painted over the face content: the nearest front-layer meteors cast
+               a moving pool of mint light onto the poster as they cross the cube -->
+          <MeteorGlow v-if="side === 'front'" />
         </div>
 
         <div
