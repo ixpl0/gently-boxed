@@ -23,11 +23,11 @@
 
     <TheCube :side="side">
       <template #front>
-        <ProfileCard @open-contacts="side = 'back'" />
+        <ProfileCard @open-contacts="side = 'top'" />
       </template>
 
       <template #back>
-        <ContactsCard />
+        <WorkflowCard />
       </template>
 
       <template #left>
@@ -39,7 +39,7 @@
       </template>
 
       <template #top>
-        <WorkflowCard />
+        <ContactsCard />
       </template>
 
       <template #bottom>
@@ -68,11 +68,11 @@
 
 <script setup lang="ts">
 import {
-  computed, onBeforeUnmount, onMounted, ref,
+  computed, onBeforeUnmount, onMounted, ref, watch,
 } from 'vue';
 import type { DirectionType, SideType } from '~/utils/sides';
 import {
-  getRoutePathFromSide, getSideFromRouteParam, SIDE_BACKGROUNDS, SIDE_NEIGHBORS, SIDE_SPARKLE_TYPES,
+  getAdjacentSide, getRoutePathFromSide, getSideFromRouteParam, SIDE_BACKGROUNDS, SIDE_NEIGHBORS, SIDE_SPARKLE_TYPES,
 } from '~/utils/sides';
 
 definePageMeta({
@@ -112,6 +112,28 @@ const handleFrameGlitch = (isActive: boolean): void => {
   isFrameGlitchActive.value = isActive;
 };
 
+// Matches the cube's transform transition in TheCube.vue (and the page background crossfade)
+const SPIN_DURATION_MS = 2100;
+
+const wheelLockUntil = ref(0);
+
+// Every spin — wheel, arrow keys, nav dots, browser back/forward — locks wheel input
+// until the cube settles, so a scroll can never interrupt a running rotation
+watch(side, () => {
+  wheelLockUntil.value = Date.now() + SPIN_DURATION_MS;
+});
+
+const handleWheel = (event: WheelEvent): void => {
+  if (event.deltaY === 0 || Date.now() < wheelLockUntil.value) {
+    return;
+  }
+
+  // Locked here as well: the watcher only fires once the async route push lands,
+  // and a fast wheel stream could sneak extra steps into that gap
+  wheelLockUntil.value = Date.now() + SPIN_DURATION_MS;
+  side.value = getAdjacentSide(side.value, event.deltaY > 0 ? 1 : -1);
+};
+
 const KEY_DIRECTIONS: Record<string, DirectionType> = {
   ArrowLeft: 'left',
   ArrowRight: 'right',
@@ -136,10 +158,13 @@ const handleKeydown = (event: KeyboardEvent): void => {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);
+  // Passive: nothing scrolls natively (body is overflow: hidden), no preventDefault needed
+  window.addEventListener('wheel', handleWheel, { passive: true });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown);
+  window.removeEventListener('wheel', handleWheel);
 });
 </script>
 

@@ -4,10 +4,10 @@ export type SideType = typeof SIDES[number];
 
 export const SIDE_LABELS: Record<SideType, string> = {
   front: 'Profile',
-  back: 'Contacts',
+  back: 'How I work',
   left: 'Experience',
   right: 'Projects',
-  top: 'How I work',
+  top: 'Contacts',
   bottom: '???',
 };
 
@@ -84,6 +84,14 @@ export const SIDE_BACKGROUNDS: Record<SideType, string> = {
   right: 'var(--color-ink)',
   top: 'var(--color-ink)',
   bottom: 'var(--color-ink)',
+};
+
+// Wheel navigation walks the route order /1../6 as a ring: scrolling past either
+// end wraps around to the other, so bottom -> front and front -> bottom
+export const getAdjacentSide = (side: SideType, step: 1 | -1): SideType => {
+  const adjacentIndex = (SIDES.indexOf(side) + step + SIDES.length) % SIDES.length;
+
+  return SIDES[adjacentIndex] ?? side;
 };
 
 // Routes map sides to /1../6 by their position in SIDES
