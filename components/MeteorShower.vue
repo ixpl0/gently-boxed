@@ -142,48 +142,49 @@ const MID_FRAME_ZONE: SpawnZone = {
 // Enough travel to cross the bottom edge even from the highest possible spawn lane
 const THROUGH_EXIT_TRAVEL_VH = THROUGH_EXIT_TARGET_VH - TOP_EDGE_ZONE.headTop.min;
 
-// The back layer is a sparse distant drizzle behind the cube; the front layer is a few
-// long bright streaks crossing over it — together they wrap the cube in parallax depth
+// The back layer carries everything from distant drizzle up to mid-range streaks, all
+// occluded by the cube; the front layer is only the couple of nearest streaks (~15% of
+// all particles) allowed to cross over it — together they wrap the cube in parallax depth
 const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
   back: {
-    count: 9,
+    count: 11,
     length: {
       far: 60,
-      near: 150,
+      near: 210,
     },
     width: {
       far: 1,
-      near: 2,
+      near: 2.5,
     },
     peakOpacity: {
       far: 0.25,
-      near: 0.7,
+      near: 0.85,
     },
     blur: {
       far: 1.6,
-      near: 0.4,
+      near: 0.2,
     },
     travel: {
       far: 60,
-      near: 85,
+      near: 95,
     },
     duration: {
       far: 2.5,
-      near: 1.9,
+      near: 1.6,
     },
   },
   front: {
-    count: 4,
+    count: 2,
     length: {
-      far: 150,
+      far: 260,
       near: 340,
     },
     width: {
-      far: 2,
+      far: 2.5,
       near: 3,
     },
     peakOpacity: {
-      far: 0.85,
+      far: 0.95,
       near: 1,
     },
     blur: {
@@ -191,11 +192,11 @@ const LAYER_CONFIGS: Record<MeteorLayerType, MeteorLayerConfig> = {
       near: 0,
     },
     travel: {
-      far: 90,
+      far: 105,
       near: 130,
     },
     duration: {
-      far: 1.95,
+      far: 1.3,
       near: 0.85,
     },
   },
