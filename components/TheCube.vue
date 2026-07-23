@@ -87,10 +87,8 @@
           class="side bottom"
           :inert="side !== 'bottom'"
         >
-          <SparklesSparkles
-            v-if="side === 'bottom'"
-            type="cross"
-          />
+          <!-- No face sparkles here: the bottom side's ambience is the page-level
+               GlitchField layers glitching behind and over the cube -->
           <slot name="bottom">
             <UiText>
               wonderful

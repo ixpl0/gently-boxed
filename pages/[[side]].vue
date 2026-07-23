@@ -1,8 +1,15 @@
 <template>
-  <div class="main-page">
+  <div
+    class="main-page"
+    :class="{ 'frame-glitch': isFrameGlitchActive && side === 'bottom' }"
+  >
     <Transition name="sparkles-fade">
       <MeteorShower
         v-if="side === 'right'"
+        layer="back"
+      />
+      <GlitchField
+        v-else-if="side === 'bottom'"
         layer="back"
       />
       <SparklesSparkles
@@ -40,11 +47,17 @@
     </TheCube>
 
     <!-- The near half of the meteor shower paints above the cube, so streaks
-         cross over the face while the back layer passes behind it -->
+         cross over the face while the back layer passes behind it; the front
+         glitch layer likewise corrupts the cube itself via backdrop-filter bars -->
     <Transition name="sparkles-fade">
       <MeteorShower
         v-if="side === 'right'"
         layer="front"
+      />
+      <GlitchField
+        v-else-if="side === 'bottom'"
+        layer="front"
+        @frame-glitch="handleFrameGlitch"
       />
     </Transition>
 
@@ -54,7 +67,7 @@
 
 <script setup lang="ts">
 import {
-  computed, onBeforeUnmount, onMounted,
+  computed, onBeforeUnmount, onMounted, ref,
 } from 'vue';
 import type { DirectionType, SideType } from '~/utils/sides';
 import {
@@ -88,6 +101,14 @@ const side = computed<SideType>({
 
 const spinToward = (direction: DirectionType): void => {
   side.value = SIDE_NEIGHBORS[side.value][direction];
+};
+
+// Driven by the front GlitchField's burst schedule; gated on the bottom side so a
+// burst can never fire the whole-frame filter while the cube is spinning away
+const isFrameGlitchActive = ref(false);
+
+const handleFrameGlitch = (isActive: boolean): void => {
+  isFrameGlitchActive.value = isActive;
 };
 
 const KEY_DIRECTIONS: Record<string, DirectionType> = {
@@ -131,6 +152,12 @@ onBeforeUnmount(() => {
   min-height: 100vh;
   min-height: 100dvh;
   background: #131826;
+}
+
+/* Tears the whole rendered frame — background, cube, overlays — row-wise for one
+   short burst; the filter def lives inside the front GlitchField instance */
+.main-page.frame-glitch {
+  filter: url("#glitch-frame-filter");
 }
 
 /* Outgoing background particles dissolve while still blinking, overlapping the
