@@ -110,6 +110,19 @@ const THIN_BAR_HEIGHT: NumberRange = {
   max: 5,
 };
 
+// Mirrors where glitch-bar-flash opens its flash window: the visible part sits at the very
+// tail of the cycle, so a freshly mounted bar would stay dark for a whole cycle first
+const FLASH_WINDOW_START_RATIO = 0.97;
+
+// The layer remounts on every arrival at the side, so a positive delay left the scene dead
+// for seconds. Each bar instead starts with its cycle already in flight (a negative delay),
+// seeded so the first flash lands between these two bounds — the second one scaled by the
+// bar's own cycle, so the opening flurry has the layer's natural density and flows straight
+// into the steady rhythm instead of firing all bars at once
+const FIRST_FLASH_MIN_SECONDS = 0.15;
+
+const FIRST_FLASH_MAX_CYCLE_RATIO = 0.55;
+
 // Seconds of calm between frame displacement bursts, and how long a single burst lasts
 const FRAME_GLITCH_PAUSE_SECONDS: NumberRange = {
   min: 2.1,
@@ -121,10 +134,16 @@ const FRAME_GLITCH_BURST_SECONDS: NumberRange = {
   max: 0.11,
 };
 
-// The cube's arrival spin lasts 2.1s (TheCube's transition), and the shortest random
-// pause matches it — the first burst waits the spin out so the whole-frame filter never
-// rasterizes the scene mid-rotation
+// The cube's arrival spin lasts 2.1s (TheCube's transition), so the first burst waits it
+// out — the whole-frame filter must never rasterize the scene mid-rotation. It fires right
+// as the cube settles though: a full random pause on top used to leave the side untorn for
+// up to 6.5s after arrival
 const ARRIVAL_SPIN_GRACE_SECONDS = 2.1;
+
+const FIRST_BURST_PAUSE_SECONDS: NumberRange = {
+  min: 0.1,
+  max: 0.5,
+};
 
 // The flash window inside glitch-bar-flash spans ~2.4% of the cycle, so these cycle
 // lengths put every visible flash in the 75-150ms range — snappy, not lingering.
@@ -209,13 +228,18 @@ const createBarHeight = (): string => {
 
 const createBar = (): GlitchBarData => {
   const duration = randomFromRange(layerConfig.barCycle);
+  const firstFlashSeconds = randomBetween(FIRST_FLASH_MIN_SECONDS, duration * FIRST_FLASH_MAX_CYCLE_RATIO);
 
   return {
     ...createShiftPair(),
     top: `${randomFromRange(BAR_TOP_RANGE)}%`,
     height: createBarHeight(),
     duration: `${duration}s`,
-    delay: `${Math.random() * duration}s`,
+
+    // Negative by construction (the flash window sits past half the cycle): it rewinds the
+    // bar to just before its flash, so the first one lands at firstFlashSeconds — while the
+    // cube is still spinning in — instead of a full cycle after mount
+    delay: `${firstFlashSeconds - FLASH_WINDOW_START_RATIO * duration}s`,
     peakOpacity: `${randomFromRange(layerConfig.barPeakOpacity)}`,
   };
 };
@@ -242,7 +266,7 @@ let frameGlitchTimerId: number | undefined;
 
 // One recursive timer alternates calm pauses with short displacement bursts; the page
 // owns the element the filter applies to, so the emitted boolean is the whole contract
-const scheduleFrameGlitchBurst = (extraPauseSeconds = 0): void => {
+const scheduleFrameGlitchBurst = (pauseSeconds = randomFromRange(FRAME_GLITCH_PAUSE_SECONDS)): void => {
   frameGlitchTimerId = window.setTimeout(() => {
     turbulenceSeed.value = Math.floor(Math.random() * 1000);
     emit('frameGlitch', true);
@@ -251,7 +275,7 @@ const scheduleFrameGlitchBurst = (extraPauseSeconds = 0): void => {
       emit('frameGlitch', false);
       scheduleFrameGlitchBurst();
     }, randomFromRange(FRAME_GLITCH_BURST_SECONDS) * 1000);
-  }, (randomFromRange(FRAME_GLITCH_PAUSE_SECONDS) + extraPauseSeconds) * 1000);
+  }, pauseSeconds * 1000);
 };
 
 const initializeBars = (): void => {
@@ -262,7 +286,7 @@ onMounted(() => {
   initializeBars();
 
   if (props.layer === 'front') {
-    scheduleFrameGlitchBurst(ARRIVAL_SPIN_GRACE_SECONDS);
+    scheduleFrameGlitchBurst(ARRIVAL_SPIN_GRACE_SECONDS + randomFromRange(FIRST_BURST_PAUSE_SECONDS));
   }
 });
 
@@ -323,14 +347,16 @@ onBeforeUnmount(() => {
 }
 
 /* The texture itself is static — a pre-baked feTurbulence tile; the motion is faked by
-   opacity flickers and abrupt background-position jumps, so the filter never re-runs */
+   opacity flickers and abrupt background-position jumps, so the filter never re-runs.
+   Its flash sits at 96.5% of the cycle, so the negative delay rewinds it to just short of
+   that: the first burst of snow hits ~0.3s after the side arrives instead of at 5.5s */
 .static-noise {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='280' height='280' filter='url(%23n)' opacity='0.5'/></svg>");
   opacity: 0;
   mix-blend-mode: screen;
-  animation: static-noise-flash 5.7s linear infinite;
+  animation: static-noise-flash 5.7s linear -5.2s infinite;
 }
 
 /* The only always-on element, so it fades in over the same 2s the page's cross-fade
