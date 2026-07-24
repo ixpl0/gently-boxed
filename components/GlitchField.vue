@@ -62,17 +62,24 @@
           />
         </filter>
 
-        <!-- Referenced by the page's .band-warp class: rows shift horizontally only
-             inside a stripe the rAF loop pins to the measured position of the rolling
-             interference band; everywhere else the map stays the neutral flood, so
-             the rest of the frame passes through untouched. The row noise is a live
-             crossfade of two feTurbulence fields clipped to the stripe (x frequency
-             0, so every row shifts as a whole scanline): the rAF loop slides the
-             arithmetic weights along a cosine, so the bend writhes smoothly from one
-             profile into the next, and each field re-rolls its seed only at the
-             moment its weight touches zero — never a visible cut. The feColorMatrix
-             pins G to 0.5 (no vertical shift) and the static feImage gradient fades
-             the stripe's alpha toward both ends before it lands over the flood.
+        <!-- Referenced by the page's .band-warp class: two chained displacement
+             passes that both ride the rolling interference band; everywhere else the
+             maps stay the neutral flood, so the rest of the frame passes through
+             untouched. Pass one is the latex dent: a pre-baked vertical pull gradient
+             (feImage, only G varies) drags the frame down along the band's travel —
+             a long stretched wake above, a short compressed bow below — like a weight
+             hauled across stretched latex. Pass two is the CRT tear: a live crossfade
+             of two feTurbulence row-noise fields (x frequency 0, so every row shifts
+             as a whole scanline) bends rows horizontally inside a stripe. Both maps
+             are generated at a fixed origin and translated to the measured band
+             position each frame (the tear via feOffset dy, the dent via its feImage
+             y), so the deformation travels with the band instead of being revealed
+             by it. The rAF loop slides the crossfade's arithmetic weights along a
+             cosine, so the bend writhes smoothly from one profile into the next, and
+             each field re-rolls its seed only at the moment its weight touches zero —
+             never a visible cut. The feColorMatrix pins G to 0.5 (the tear never
+             shifts rows vertically) and the static feImage gradient fades the
+             stripe's alpha toward both ends before it lands over the flood.
              sRGB interpolation is load-bearing — in the default linearRGB the
              #808080 flood stops being 0.5 and the whole frame shifts sideways -->
         <filter
@@ -91,16 +98,20 @@
             ref="tearNoiseElementA"
             type="fractalNoise"
             baseFrequency="0 0.05"
-            numOctaves="2"
+            numOctaves="4"
             seed="7"
+            :y="-BAND_WARP_NOISE_BLEED"
+            :height="BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2"
             result="tear-noise-a"
           />
           <feTurbulence
             ref="tearNoiseElementB"
             type="fractalNoise"
             baseFrequency="0 0.05"
-            numOctaves="2"
+            numOctaves="4"
             seed="211"
+            :y="-BAND_WARP_NOISE_BLEED"
+            :height="BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2"
             result="tear-noise-b"
           />
           <feComposite
@@ -117,8 +128,20 @@
           <feColorMatrix
             in="blended-noise"
             type="matrix"
-            values="2.4 0 0 0 -0.7  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1"
+            values="1.4 0 0 0 -0.2  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1"
             result="tear-noise"
+          />
+          <!-- The explicit subregion height (and the y the rAF loop writes) is
+               load-bearing: unset, the subregion defaults to the union of the
+               inputs' subregions — the fixed strip at the top — and hard-clips
+               the translated noise right back where it came from -->
+          <feOffset
+            ref="tearOffsetElement"
+            in="tear-noise"
+            dx="0"
+            dy="0"
+            :height="BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2"
+            result="tear-noise-placed"
           />
           <feImage
             ref="warpMaskImage"
@@ -127,7 +150,7 @@
             result="stripe-fade"
           />
           <feComposite
-            in="tear-noise"
+            in="tear-noise-placed"
             in2="stripe-fade"
             operator="in"
             result="stripe-noise"
@@ -138,12 +161,37 @@
             operator="over"
             result="warp-map"
           />
+          <feImage
+            ref="dentProfileImage"
+            x="0"
+            y="0"
+            width="0"
+            height="0"
+            preserveAspectRatio="none"
+            :href="DENT_PROFILE_URI"
+            result="dent-profile"
+          />
+          <feComposite
+            in="dent-profile"
+            in2="neutral-map"
+            operator="over"
+            result="dent-map"
+          />
           <feDisplacementMap
             in="SourceGraphic"
-            in2="warp-map"
-            scale="37"
+            in2="dent-map"
+            scale="56"
             xChannelSelector="R"
             yChannelSelector="G"
+            result="dented-frame"
+          />
+          <feDisplacementMap
+            in="dented-frame"
+            in2="warp-map"
+            scale="44"
+            xChannelSelector="R"
+            yChannelSelector="G"
+            result="torn-frame"
           />
         </filter>
       </svg>
@@ -247,7 +295,7 @@ const BAND_WARP_STRIPE_DOWNSHIFT = 18;
 // Fallback pace of the crossfade between the two noise fields (one full A→B→A lap);
 // the live value is read off the --band-warp-morph-seconds custom property each
 // frame, so the tuning panel and the stylesheet can retune it without touching JS
-const BAND_WARP_MORPH_SECONDS = 5.1;
+const BAND_WARP_MORPH_SECONDS = 2.7;
 
 // rAF gaps (hidden tab, dropped frames) would otherwise teleport the crossfade
 const BAND_WARP_MAX_FRAME_DELTA_SECONDS = 0.1;
@@ -255,6 +303,48 @@ const BAND_WARP_MAX_FRAME_DELTA_SECONDS = 0.1;
 // The live noise subregion extends past the fade mask on both ends, so the mask
 // never samples the clamped edge of the turbulence strip
 const BAND_WARP_NOISE_BLEED = 12;
+
+// The latex dent the band drags along: the fallback height of the pull dome (the
+// live value is read off --band-dent-height each frame, same contract as the morph
+// pace) and where its peak sits inside the strip. The band travels down, so the
+// strip's upper part is the wake it came from: the peak past the middle keeps the
+// wake long and stretched while the bow ahead compresses short — that asymmetry is
+// what reads as dragging, not just denting
+const BAND_DENT_STRIPE_HEIGHT = 270;
+
+const BAND_DENT_PEAK_RATIO = 0.62;
+
+const BAND_DENT_PROFILE_STOPS = 13;
+
+// The pull profile is baked once into a tiny vertical gradient the feImage stretches
+// over the strip: only G varies (below 0.5 pulls the frame down, along the band's
+// travel — the displacement scale flips it), R/B stay 0.5 so the pass never shifts
+// rows sideways. A squared sine keeps the ends and the peak flat, so the piecewise
+// stops never kink the stretch visibly
+const createDentProfileUri = (): string => {
+  const stops = Array.from({ length: BAND_DENT_PROFILE_STOPS }, (_, stopIndex) => {
+    const offset = stopIndex / (BAND_DENT_PROFILE_STOPS - 1);
+    const phase = offset < BAND_DENT_PEAK_RATIO
+      ? (offset / BAND_DENT_PEAK_RATIO) * 0.5
+      : 0.5 + ((offset - BAND_DENT_PEAK_RATIO) / (1 - BAND_DENT_PEAK_RATIO)) * 0.5;
+    const pullDepth = Math.sin(Math.PI * phase) ** 2;
+    const greenHex = Math.round(128 * (1 - pullDepth))
+      .toString(16)
+      .padStart(2, '0');
+
+    return `<stop offset='${offset.toFixed(3)}' stop-color='#80${greenHex}80'/>`;
+  })
+    .join('');
+
+  const svg = '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'4\' height=\'520\'>'
+    + `<linearGradient id='dent' x1='0' y1='0' x2='0' y2='1'>${stops}</linearGradient>`
+    + '<rect width=\'100%\' height=\'100%\' fill=\'url(#dent)\'/>'
+    + '</svg>';
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+};
+
+const DENT_PROFILE_URI = createDentProfileUri();
 
 // The flash window inside glitch-bar-flash spans ~2.4% of the cycle, so these cycle
 // lengths put every visible flash in the 75-150ms range — snappy, not lingering.
@@ -326,6 +416,10 @@ const tearNoiseElementA = ref<SVGFETurbulenceElement | null>(null);
 const tearNoiseElementB = ref<SVGFETurbulenceElement | null>(null);
 
 const tearBlendElement = ref<SVGFECompositeElement | null>(null);
+
+const tearOffsetElement = ref<SVGFEOffsetElement | null>(null);
+
+const dentProfileImage = ref<SVGFEImageElement | null>(null);
 
 const randomBetween = (min: number, max: number): number => min + Math.random() * (max - min);
 
@@ -408,6 +502,8 @@ let bandWarpDelayTimerId: number | undefined;
 
 let bandWarpMaskWidth = 0;
 
+let bandWarpDentHeight = 0;
+
 let bandWarpMorphPhase = 0;
 
 let bandWarpLastTimestamp: number | undefined;
@@ -431,21 +527,34 @@ const createBandWarpMaskUri = (width: number): string => {
 
 const rollNoiseSeed = (): number => Math.floor(Math.random() * 1000);
 
-// The morph pace is a look-affecting number, so it lives in CSS: the JS side only
-// measures it (empty when nothing overrides the default)
-const readMorphSeconds = (field: HTMLElement): number => {
-  const configured = Number.parseFloat(getComputedStyle(field)
-    .getPropertyValue('--band-warp-morph-seconds'));
+interface BandWarpTuning {
+  morphSeconds: number;
+  dentHeight: number;
+}
 
-  return Number.isFinite(configured) && configured > 0 ? configured : BAND_WARP_MORPH_SECONDS;
+// The morph pace and the dent dome's height are look-affecting numbers, so they
+// live in CSS: the JS side only measures them (empty when nothing overrides the
+// defaults)
+const readBandWarpTuning = (field: HTMLElement): BandWarpTuning => {
+  const style = getComputedStyle(field);
+  const morphSeconds = Number.parseFloat(style.getPropertyValue('--band-warp-morph-seconds'));
+  const dentHeight = Number.parseFloat(style.getPropertyValue('--band-dent-height'));
+
+  return {
+    morphSeconds: Number.isFinite(morphSeconds) && morphSeconds > 0 ? morphSeconds : BAND_WARP_MORPH_SECONDS,
+    dentHeight: Number.isFinite(dentHeight) && dentHeight > 0 ? dentHeight : BAND_DENT_STRIPE_HEIGHT,
+  };
 };
 
 // All reads first, then writes (MeteorGlow's discipline): the CSS roll animation
 // stays the source of truth and the loop only reports where the band currently is,
-// so the stripe can never drift out of sync with the visible glow. Filter primitives
+// so the warp can never drift out of sync with the visible glow. Filter primitives
 // cannot consume custom properties, hence direct attributes instead of the usual
-// CSS-var handover. Both turbulence strips and the fade mask ride the same measured
-// position; the mask regenerates whenever the width changes, which also covers the
+// CSS-var handover. The turbulence strips render at a fixed origin and the loop
+// translates the blended tear to the band through the feOffset's dy — the bend
+// profile travels with the band instead of being a stationary field the stripe
+// merely reveals; the dent dome rides along through its feImage's y. The mask and
+// the dent image resize whenever the measured width changes, which also covers the
 // very first frame and window resizes. The crossfade phase advances by wall-clock
 // delta, so retuning the pace mid-flight never jumps the weights, and each noise
 // field re-rolls its seed exactly when the cosine parks its weight at zero
@@ -456,24 +565,30 @@ const driveBandWarp = (timestamp: number): void => {
   const noiseA = tearNoiseElementA.value;
   const noiseB = tearNoiseElementB.value;
   const blend = tearBlendElement.value;
+  const tearOffset = tearOffsetElement.value;
+  const dentImage = dentProfileImage.value;
 
-  if (field && band && mask && noiseA && noiseB && blend) {
+  if (field && band && mask && noiseA && noiseB && blend && tearOffset && dentImage) {
     const fieldRect = field.getBoundingClientRect();
     const bandRect = band.getBoundingClientRect();
     const width = Math.round(fieldRect.width);
-    const morphSeconds = readMorphSeconds(field);
+    const { morphSeconds, dentHeight } = readBandWarpTuning(field);
 
     if (width > 0 && width !== bandWarpMaskWidth) {
       bandWarpMaskWidth = width;
       mask.setAttribute('width', `${width}`);
       mask.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT}`);
       mask.setAttribute('href', createBandWarpMaskUri(width));
-      noiseA.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2}`);
-      noiseB.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2}`);
+      dentImage.setAttribute('width', `${width}`);
+    }
+
+    if (dentHeight !== bandWarpDentHeight) {
+      bandWarpDentHeight = dentHeight;
+      dentImage.setAttribute('height', `${dentHeight}`);
     }
 
     const stripeTop = bandRect.top - fieldRect.top + (bandRect.height - BAND_WARP_STRIPE_HEIGHT) / 2 + BAND_WARP_STRIPE_DOWNSHIFT;
-    const noiseTop = (stripeTop - BAND_WARP_NOISE_BLEED).toFixed(1);
+    const bandCenter = bandRect.top - fieldRect.top + bandRect.height / 2;
     const frameDelta = bandWarpLastTimestamp === undefined
       ? 0
       : Math.min((timestamp - bandWarpLastTimestamp) / 1000, BAND_WARP_MAX_FRAME_DELTA_SECONDS);
@@ -483,8 +598,13 @@ const driveBandWarp = (timestamp: number): void => {
     bandWarpMorphPhase = (bandWarpMorphPhase + frameDelta / morphSeconds) % 1;
 
     mask.setAttribute('y', stripeTop.toFixed(1));
-    noiseA.setAttribute('y', noiseTop);
-    noiseB.setAttribute('y', noiseTop);
+    tearOffset.setAttribute('dy', stripeTop.toFixed(1));
+
+    // The offset's own subregion chases the shifted noise: filter primitives clip
+    // their output to it, and its default sits where the noise is generated, not
+    // where it lands
+    tearOffset.setAttribute('y', (stripeTop - BAND_WARP_NOISE_BLEED).toFixed(1));
+    dentImage.setAttribute('y', (bandCenter - dentHeight * BAND_DENT_PEAK_RATIO).toFixed(1));
 
     // Field A rests at phase 0.5, field B at the wrap — swap seeds only there
     if (previousPhase < 0.5 && bandWarpMorphPhase >= 0.5) {
@@ -630,7 +750,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 18px;
   background-image: var(--noise-tile);
-  opacity: var(--band-noise-opacity, 0.78);
+  opacity: var(--band-noise-opacity, 0.4);
   mix-blend-mode: screen;
   animation: band-noise-crawl 0.5s steps(4) infinite;
 }
@@ -655,7 +775,7 @@ onBeforeUnmount(() => {
 .scanlines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(0deg, rgb(from #c8beff r g b / var(--scanline-opacity, 4%)) 0, rgb(from #c8beff r g b / var(--scanline-opacity, 4%)) 1px, rgb(from #c8beff r g b / 0%) 1px, rgb(from #c8beff r g b / 0%) var(--scanline-step, 3px));
+  background: repeating-linear-gradient(0deg, rgb(from #c8beff r g b / var(--scanline-opacity, 10%)) 0, rgb(from #c8beff r g b / var(--scanline-opacity, 10%)) 1px, rgb(from #c8beff r g b / 0%) 1px, rgb(from #c8beff r g b / 0%) var(--scanline-step, 3px));
   animation: glitch-fade-in 2s ease;
 }
 

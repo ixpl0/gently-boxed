@@ -60,6 +60,8 @@ type KnobIdType
   | 'noiseOctaves'
   | 'rowContrast'
   | 'morphSeconds'
+  | 'dentScale'
+  | 'dentHeight'
   | 'glowOpacity'
   | 'fringeOpacity'
   | 'noiseOpacity'
@@ -95,8 +97,19 @@ const findWarpPrimitive = (selector: string): Element | null => document.querySe
 const findWarpPrimitives = (selector: string): readonly Element[] => Array.from(document.querySelectorAll(`#interference-warp-filter ${selector}`));
 
 const applyWarpScale = (value: number): void => {
-  findWarpPrimitive('feDisplacementMap')
+  findWarpPrimitive('feDisplacementMap[result="torn-frame"]')
     ?.setAttribute('scale', `${value}`);
+};
+
+// Negative values flip the pull against the band's travel (the latex dragged up
+// instead of down)
+const applyDentScale = (value: number): void => {
+  findWarpPrimitive('feDisplacementMap[result="dented-frame"]')
+    ?.setAttribute('scale', `${value}`);
+};
+
+const applyDentHeight = (value: number): void => {
+  document.documentElement.style.setProperty('--band-dent-height', `${value}px`);
 };
 
 const applyRowFrequency = (value: number): void => {
@@ -146,6 +159,7 @@ const applyScanlineStep = (value: number): void => {
 
 const TUNED_VARIABLES = [
   '--band-warp-morph-seconds',
+  '--band-dent-height',
   '--band-glow-opacity',
   '--band-fringe-opacity',
   '--band-noise-opacity',
@@ -164,7 +178,7 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 0,
         max: 60,
         step: 1,
-        defaultValue: 37,
+        defaultValue: 44,
         unit: 'px',
         apply: applyWarpScale,
       },
@@ -183,7 +197,7 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 1,
         max: 4,
         step: 1,
-        defaultValue: 2,
+        defaultValue: 4,
         apply: applyNoiseOctaves,
       },
       {
@@ -192,7 +206,7 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 0.5,
         max: 3,
         step: 0.1,
-        defaultValue: 2.4,
+        defaultValue: 1.4,
         apply: applyRowContrast,
       },
       {
@@ -201,9 +215,35 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 0.5,
         max: 8,
         step: 0.1,
-        defaultValue: 5.1,
+        defaultValue: 2.7,
         unit: 's',
         apply: applyMorphSeconds,
+      },
+    ],
+  },
+  {
+    id: 'dent',
+    label: 'Прогиб (латекс)',
+    knobs: [
+      {
+        id: 'dentScale',
+        label: 'scale',
+        min: -120,
+        max: 120,
+        step: 2,
+        defaultValue: 56,
+        unit: 'px',
+        apply: applyDentScale,
+      },
+      {
+        id: 'dentHeight',
+        label: 'height',
+        min: 120,
+        max: 520,
+        step: 10,
+        defaultValue: 270,
+        unit: 'px',
+        apply: applyDentHeight,
       },
     ],
   },
@@ -236,7 +276,7 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 0,
         max: 0.8,
         step: 0.02,
-        defaultValue: 0.78,
+        defaultValue: 0.4,
         apply: applyNoiseOpacity,
       },
     ],
@@ -251,7 +291,7 @@ const KNOB_SECTIONS: readonly KnobSection[] = [
         min: 0,
         max: 15,
         step: 0.5,
-        defaultValue: 4,
+        defaultValue: 10,
         unit: '%',
         apply: applyScanlineOpacity,
       },

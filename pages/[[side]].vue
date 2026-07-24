@@ -71,12 +71,6 @@
     </Transition>
 
     <SideNavigation :current-side="side" />
-
-    <!-- TEMPORARY: tuning panels for the bottom side's glitch pass — the palette
-         on the left, the warp/band knobs on the right; unmount both once the
-         picked values are baked back into global.css and GlitchField.vue -->
-    <ColorTuner />
-    <GlitchTuner />
   </div>
 </template>
 
@@ -212,8 +206,9 @@ onBeforeUnmount(() => {
   filter: url("#glitch-frame-filter");
 }
 
-/* The interference band's horizontal CRT tear: rows shift only inside the stripe
-   the front GlitchField pins to the band's measured position every frame */
+/* The interference band's travelling deformation — the latex dent dragging the
+   frame along the roll plus the horizontal CRT tear — both pinned by the front
+   GlitchField to the band's measured position every frame */
 .main-page.band-warp {
   filter: url("#interference-warp-filter");
 }
