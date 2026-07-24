@@ -14,6 +14,11 @@
   --font-chrome: "Audiowide", "Trebuchet MS", system-ui, sans-serif;
   --font-script: "Mr Dafoe", "Segoe Script", cursive;
 
+  /* The left side's drive tempo: one grid cell per this long. It lives here rather
+     than on .retro-drive because the cube's left face borrows it too — the road light
+     licking its bottom edge has to pulse in step with the cross-lines rushing under it */
+  --drive-speed: 1.4s;
+
   /* The palette's single source of truth: every shared color is defined once here,
      and components either consume the var directly or derive alpha/tint variants
      via relative color syntax and color-mix(). Plain #fff stays inline */

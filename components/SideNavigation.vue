@@ -2,6 +2,7 @@
   <nav
     class="side-navigation"
     aria-label="Cube sides"
+    :style="{ '--current-accent': SIDE_COLORS[currentSide] }"
   >
     <div class="dots">
       <NuxtLink
@@ -32,7 +33,12 @@ defineProps<{
 </script>
 
 <style scoped>
+/* Lifted into its own layer: the left side's reflection is painted by a
+   transformed subtree, which the paint order puts above plain in-flow content,
+   and it was washing over the dots and the label */
 .side-navigation {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,10 +72,15 @@ defineProps<{
   transform: scale(1.25);
 }
 
+/* The label wears the side it names: a neutral grey was the one thing on screen
+   that belonged to no side's palette, and it read as system chrome dropped over
+   the scene. The tint crossfades over the spin, like the page background */
 .current-label {
-  color: #8b93a7;
+  color: oklch(from var(--current-accent) 74% max(c, 0.05) h);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 0 14px rgb(from var(--current-accent) r g b / 40%);
+  transition: color 2.1s, text-shadow 2.1s;
 }
 </style>
