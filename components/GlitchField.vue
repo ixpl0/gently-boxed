@@ -1,13 +1,17 @@
 <template>
   <div
+    ref="fieldElement"
     class="glitch-field"
     :data-layer="layer"
   >
     <!-- Painted before the bars so a bar flash corrupts the band too -->
     <div
       v-if="layer === 'front'"
+      ref="bandElement"
       class="interference-band"
-    />
+    >
+      <div class="band-noise" />
+    </div>
 
     <div
       v-for="(bar, index) in bars"
@@ -53,6 +57,91 @@
             in="SourceGraphic"
             in2="row-noise"
             scale="15"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+
+        <!-- Referenced by the page's .band-warp class: rows shift horizontally only
+             inside a stripe the rAF loop pins to the measured position of the rolling
+             interference band; everywhere else the map stays the neutral flood, so
+             the rest of the frame passes through untouched. The row noise is a live
+             crossfade of two feTurbulence fields clipped to the stripe (x frequency
+             0, so every row shifts as a whole scanline): the rAF loop slides the
+             arithmetic weights along a cosine, so the bend writhes smoothly from one
+             profile into the next, and each field re-rolls its seed only at the
+             moment its weight touches zero — never a visible cut. The feColorMatrix
+             pins G to 0.5 (no vertical shift) and the static feImage gradient fades
+             the stripe's alpha toward both ends before it lands over the flood.
+             sRGB interpolation is load-bearing — in the default linearRGB the
+             #808080 flood stops being 0.5 and the whole frame shifts sideways -->
+        <filter
+          id="interference-warp-filter"
+          color-interpolation-filters="sRGB"
+          x="-4%"
+          y="-2%"
+          width="108%"
+          height="104%"
+        >
+          <feFlood
+            flood-color="#808080"
+            result="neutral-map"
+          />
+          <feTurbulence
+            ref="tearNoiseElementA"
+            type="fractalNoise"
+            baseFrequency="0 0.05"
+            numOctaves="2"
+            seed="7"
+            result="tear-noise-a"
+          />
+          <feTurbulence
+            ref="tearNoiseElementB"
+            type="fractalNoise"
+            baseFrequency="0 0.05"
+            numOctaves="2"
+            seed="211"
+            result="tear-noise-b"
+          />
+          <feComposite
+            ref="tearBlendElement"
+            in="tear-noise-a"
+            in2="tear-noise-b"
+            operator="arithmetic"
+            k1="0"
+            k2="1"
+            k3="0"
+            k4="0"
+            result="blended-noise"
+          />
+          <feColorMatrix
+            in="blended-noise"
+            type="matrix"
+            values="2.4 0 0 0 -0.7  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1"
+            result="tear-noise"
+          />
+          <feImage
+            ref="warpMaskImage"
+            x="0"
+            preserveAspectRatio="none"
+            result="stripe-fade"
+          />
+          <feComposite
+            in="tear-noise"
+            in2="stripe-fade"
+            operator="in"
+            result="stripe-noise"
+          />
+          <feComposite
+            in="stripe-noise"
+            in2="neutral-map"
+            operator="over"
+            result="warp-map"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="warp-map"
+            scale="37"
             xChannelSelector="R"
             yChannelSelector="G"
           />
@@ -145,6 +234,28 @@ const FIRST_BURST_PAUSE_SECONDS: NumberRange = {
   max: 0.5,
 };
 
+// The interference band's CRT tear: the page-level #interference-warp-filter shifts
+// rows horizontally inside a noise stripe pinned to the band. The stripe is taller
+// than the band's bright core and its alpha fades toward both ends, so the tear
+// rolls in and out smoothly instead of starting on a hard line
+const BAND_WARP_STRIPE_HEIGHT = 190;
+
+// Pushes the stripe's center below the band's, so the tear trails the bright core
+// slightly, like tracking error hanging off a roll bar
+const BAND_WARP_STRIPE_DOWNSHIFT = 18;
+
+// Fallback pace of the crossfade between the two noise fields (one full A→B→A lap);
+// the live value is read off the --band-warp-morph-seconds custom property each
+// frame, so the tuning panel and the stylesheet can retune it without touching JS
+const BAND_WARP_MORPH_SECONDS = 5.1;
+
+// rAF gaps (hidden tab, dropped frames) would otherwise teleport the crossfade
+const BAND_WARP_MAX_FRAME_DELTA_SECONDS = 0.1;
+
+// The live noise subregion extends past the fade mask on both ends, so the mask
+// never samples the clamped edge of the turbulence strip
+const BAND_WARP_NOISE_BLEED = 12;
+
 // The flash window inside glitch-bar-flash spans ~2.4% of the cycle, so these cycle
 // lengths put every visible flash in the 75-150ms range — snappy, not lingering.
 // The back layer is dim lit strips in the void around the cube; the front layer's bars
@@ -194,6 +305,7 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
   frameGlitch: [isActive: boolean];
+  bandWarp: [isActive: boolean];
 }>();
 
 const layerConfig = LAYER_CONFIGS[props.layer];
@@ -202,6 +314,18 @@ const bars = ref<GlitchBarData[]>([]);
 
 // Re-randomised right before every burst so each displacement tears different rows
 const turbulenceSeed = ref(7);
+
+const fieldElement = ref<HTMLElement | null>(null);
+
+const bandElement = ref<HTMLElement | null>(null);
+
+const warpMaskImage = ref<SVGFEImageElement | null>(null);
+
+const tearNoiseElementA = ref<SVGFETurbulenceElement | null>(null);
+
+const tearNoiseElementB = ref<SVGFETurbulenceElement | null>(null);
+
+const tearBlendElement = ref<SVGFECompositeElement | null>(null);
 
 const randomBetween = (min: number, max: number): number => min + Math.random() * (max - min);
 
@@ -278,6 +402,113 @@ const scheduleFrameGlitchBurst = (pauseSeconds = randomFromRange(FRAME_GLITCH_PA
   }, pauseSeconds * 1000);
 };
 
+let bandWarpFrameId: number | undefined;
+
+let bandWarpDelayTimerId: number | undefined;
+
+let bandWarpMaskWidth = 0;
+
+let bandWarpMorphPhase = 0;
+
+let bandWarpLastTimestamp: number | undefined;
+
+// The static alpha gradient that fades the tear to neutral at the stripe's ends;
+// only its alpha matters (the "in" composite ignores its colors). Regenerated only
+// when the measured width changes, so there is no per-frame image churn
+const createBandWarpMaskUri = (width: number): string => {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${BAND_WARP_STRIPE_HEIGHT}'>`
+    + '<linearGradient id=\'fade\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'>'
+    + '<stop offset=\'0\' stop-color=\'#fff\' stop-opacity=\'0\'/>'
+    + '<stop offset=\'0.3\' stop-color=\'#fff\' stop-opacity=\'1\'/>'
+    + '<stop offset=\'0.7\' stop-color=\'#fff\' stop-opacity=\'1\'/>'
+    + '<stop offset=\'1\' stop-color=\'#fff\' stop-opacity=\'0\'/>'
+    + '</linearGradient>'
+    + '<rect width=\'100%\' height=\'100%\' fill=\'url(#fade)\'/>'
+    + '</svg>';
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+};
+
+const rollNoiseSeed = (): number => Math.floor(Math.random() * 1000);
+
+// The morph pace is a look-affecting number, so it lives in CSS: the JS side only
+// measures it (empty when nothing overrides the default)
+const readMorphSeconds = (field: HTMLElement): number => {
+  const configured = Number.parseFloat(getComputedStyle(field)
+    .getPropertyValue('--band-warp-morph-seconds'));
+
+  return Number.isFinite(configured) && configured > 0 ? configured : BAND_WARP_MORPH_SECONDS;
+};
+
+// All reads first, then writes (MeteorGlow's discipline): the CSS roll animation
+// stays the source of truth and the loop only reports where the band currently is,
+// so the stripe can never drift out of sync with the visible glow. Filter primitives
+// cannot consume custom properties, hence direct attributes instead of the usual
+// CSS-var handover. Both turbulence strips and the fade mask ride the same measured
+// position; the mask regenerates whenever the width changes, which also covers the
+// very first frame and window resizes. The crossfade phase advances by wall-clock
+// delta, so retuning the pace mid-flight never jumps the weights, and each noise
+// field re-rolls its seed exactly when the cosine parks its weight at zero
+const driveBandWarp = (timestamp: number): void => {
+  const field = fieldElement.value;
+  const band = bandElement.value;
+  const mask = warpMaskImage.value;
+  const noiseA = tearNoiseElementA.value;
+  const noiseB = tearNoiseElementB.value;
+  const blend = tearBlendElement.value;
+
+  if (field && band && mask && noiseA && noiseB && blend) {
+    const fieldRect = field.getBoundingClientRect();
+    const bandRect = band.getBoundingClientRect();
+    const width = Math.round(fieldRect.width);
+    const morphSeconds = readMorphSeconds(field);
+
+    if (width > 0 && width !== bandWarpMaskWidth) {
+      bandWarpMaskWidth = width;
+      mask.setAttribute('width', `${width}`);
+      mask.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT}`);
+      mask.setAttribute('href', createBandWarpMaskUri(width));
+      noiseA.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2}`);
+      noiseB.setAttribute('height', `${BAND_WARP_STRIPE_HEIGHT + BAND_WARP_NOISE_BLEED * 2}`);
+    }
+
+    const stripeTop = bandRect.top - fieldRect.top + (bandRect.height - BAND_WARP_STRIPE_HEIGHT) / 2 + BAND_WARP_STRIPE_DOWNSHIFT;
+    const noiseTop = (stripeTop - BAND_WARP_NOISE_BLEED).toFixed(1);
+    const frameDelta = bandWarpLastTimestamp === undefined
+      ? 0
+      : Math.min((timestamp - bandWarpLastTimestamp) / 1000, BAND_WARP_MAX_FRAME_DELTA_SECONDS);
+    const previousPhase = bandWarpMorphPhase;
+
+    bandWarpLastTimestamp = timestamp;
+    bandWarpMorphPhase = (bandWarpMorphPhase + frameDelta / morphSeconds) % 1;
+
+    mask.setAttribute('y', stripeTop.toFixed(1));
+    noiseA.setAttribute('y', noiseTop);
+    noiseB.setAttribute('y', noiseTop);
+
+    // Field A rests at phase 0.5, field B at the wrap — swap seeds only there
+    if (previousPhase < 0.5 && bandWarpMorphPhase >= 0.5) {
+      noiseA.setAttribute('seed', `${rollNoiseSeed()}`);
+    }
+
+    if (bandWarpMorphPhase < previousPhase) {
+      noiseB.setAttribute('seed', `${rollNoiseSeed()}`);
+    }
+
+    // L2-normalized weights keep the blended noise's spread constant through the
+    // crossfade (plain linear weights would dip the tear ~30% at the midpoint);
+    // k4 re-centers the mean on 0.5 so the band never gains a uniform side shift
+    const weightA = 0.5 + 0.5 * Math.cos(2 * Math.PI * bandWarpMorphPhase);
+    const weightNorm = Math.hypot(weightA, 1 - weightA);
+
+    blend.setAttribute('k2', (weightA / weightNorm).toFixed(3));
+    blend.setAttribute('k3', ((1 - weightA) / weightNorm).toFixed(3));
+    blend.setAttribute('k4', (0.5 * (1 - 1 / weightNorm)).toFixed(3));
+  }
+
+  bandWarpFrameId = window.requestAnimationFrame(driveBandWarp);
+};
+
 const initializeBars = (): void => {
   bars.value = Array.from({ length: layerConfig.barCount }, () => createBar());
 };
@@ -287,6 +518,13 @@ onMounted(() => {
 
   if (props.layer === 'front') {
     scheduleFrameGlitchBurst(ARRIVAL_SPIN_GRACE_SECONDS + randomFromRange(FIRST_BURST_PAUSE_SECONDS));
+
+    // The warp waits out the same arrival spin the bursts do: the page-level filter
+    // flattens the cube's 3D, so it must not engage until the scene has settled
+    bandWarpDelayTimerId = window.setTimeout(() => {
+      emit('bandWarp', true);
+      driveBandWarp(performance.now());
+    }, ARRIVAL_SPIN_GRACE_SECONDS * 1000);
   }
 });
 
@@ -295,14 +533,26 @@ onBeforeUnmount(() => {
     window.clearTimeout(frameGlitchTimerId);
   }
 
+  if (bandWarpDelayTimerId !== undefined) {
+    window.clearTimeout(bandWarpDelayTimerId);
+  }
+
+  if (bandWarpFrameId !== undefined) {
+    window.cancelAnimationFrame(bandWarpFrameId);
+  }
+
   if (props.layer === 'front') {
     emit('frameGlitch', false);
+    emit('bandWarp', false);
   }
 });
 </script>
 
 <style scoped>
+/* The shared pre-baked feTurbulence tile: .static-noise flashes it over the whole
+   frame, .band-noise drags a strip of it along the interference band */
 .glitch-field {
+  --noise-tile: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='280' height='280' filter='url(%23n)' opacity='0.5'/></svg>");
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -341,9 +591,48 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   height: 140px;
-  background: linear-gradient(180deg, rgb(from var(--color-accent-bottom) r g b / 0%) 0%, rgb(from var(--color-accent-bottom) r g b / 12%) 50%, rgb(from var(--color-accent-bottom) r g b / 0%) 100%);
+  background: linear-gradient(180deg, rgb(from var(--color-accent-bottom) r g b / 0%) 0%, rgb(from var(--color-accent-bottom) r g b / var(--band-glow-opacity, 19%)) 50%, rgb(from var(--color-accent-bottom) r g b / 0%) 100%);
   transform: translate3d(0, -140px, 0);
   animation: interference-roll 8.5s linear infinite;
+}
+
+/* The chromatic fringes flanking the band's bright core — the same split pair the
+   terminal text flashes apart into, so the band speaks the face's broken-signal
+   language; they ride the roll and the warp tears them along with the frame */
+.interference-band::before,
+.interference-band::after {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  content: "";
+}
+
+.interference-band::before {
+  top: 27%;
+  background: var(--color-split-cold);
+  opacity: var(--band-fringe-opacity, 0.04);
+}
+
+.interference-band::after {
+  bottom: 27%;
+  background: var(--color-split-warm);
+  opacity: var(--band-fringe-opacity, 0.04);
+}
+
+/* The head-switching noise of a worn tape trailing the band's lower edge: the same
+   pre-baked tile as .static-noise, crawling in hard steps so the filter behind the
+   texture never re-runs */
+.band-noise {
+  position: absolute;
+  bottom: 14%;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  background-image: var(--noise-tile);
+  opacity: var(--band-noise-opacity, 0.78);
+  mix-blend-mode: screen;
+  animation: band-noise-crawl 0.5s steps(4) infinite;
 }
 
 /* The texture itself is static — a pre-baked feTurbulence tile; the motion is faked by
@@ -353,18 +642,20 @@ onBeforeUnmount(() => {
 .static-noise {
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='280' height='280' filter='url(%23n)' opacity='0.5'/></svg>");
+  background-image: var(--noise-tile);
   opacity: 0;
   mix-blend-mode: screen;
   animation: static-noise-flash 5.7s linear -5.2s infinite;
 }
 
 /* The only always-on element, so it fades in over the same 2s the page's cross-fade
-   gives leaving layers — otherwise the pattern pops while the cube is still spinning in */
+   gives leaving layers — otherwise the pattern pops while the cube is still spinning in.
+   Line strength and pitch are tunable custom properties (fallbacks inline, so the
+   tuning panel's <html> overrides inherit through); the 1px line itself stays fixed */
 .scanlines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(0deg, #c8beff0a 0, #c8beff0a 1px, #c8beff00 1px, #c8beff00 3px);
+  background: repeating-linear-gradient(0deg, rgb(from #c8beff r g b / var(--scanline-opacity, 4%)) 0, rgb(from #c8beff r g b / var(--scanline-opacity, 4%)) 1px, rgb(from #c8beff r g b / 0%) 1px, rgb(from #c8beff r g b / 0%) var(--scanline-step, 3px));
   animation: glitch-fade-in 2s ease;
 }
 
@@ -453,6 +744,17 @@ onBeforeUnmount(() => {
 
   100% {
     transform: translate3d(0, 100vh, 0);
+  }
+}
+
+/* One full tile per cycle, so the wrap from 280px back to 0 is seamless */
+@keyframes band-noise-crawl {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 280px 0;
   }
 }
 </style>

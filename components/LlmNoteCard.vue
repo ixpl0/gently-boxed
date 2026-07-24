@@ -249,12 +249,12 @@ onBeforeUnmount(() => {
 }
 
 .rgb-flash::before {
-  color: #4ef3e0;
+  color: var(--color-split-cold);
   animation: rgb-split-left var(--rgb-flash-cycle, 3.8s) linear var(--rgb-flash-phase, 0s) infinite;
 }
 
 .rgb-flash::after {
-  color: #ff4ea8;
+  color: var(--color-split-warm);
   animation: rgb-split-right var(--rgb-flash-cycle, 3.8s) linear var(--rgb-flash-phase, 0s) infinite;
 }
 

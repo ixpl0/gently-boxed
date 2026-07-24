@@ -85,7 +85,7 @@ export const SIDE_BACKGROUNDS: Record<SideType, string> = {
   left: 'var(--color-ink)',
   right: 'var(--color-ink)',
   top: 'var(--color-ink)',
-  bottom: 'var(--color-ink)',
+  bottom: 'var(--color-page-bottom)',
 };
 
 // Wheel navigation walks the route order /1../6 as a ring: scrolling past either

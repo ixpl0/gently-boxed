@@ -81,7 +81,7 @@ import {
   computed, onBeforeUnmount, onMounted, ref, watchEffect,
 } from 'vue';
 
-type GroupIdType = 'face' | 'page' | 'checkers';
+type GroupIdType = 'band' | 'terminal' | 'splitCold' | 'splitWarm' | 'page';
 
 type ChannelType = 'hue' | 'saturation' | 'lightness';
 
@@ -117,20 +117,55 @@ interface HslColor {
 // panel overrides the same variables inline on <html>, so every var()-derived
 // color follows live.
 //
-// Left aimed at the back ("How I work") side: the paper the face is printed on,
-// the water behind the cube and the ink the checkers are drawn with. Inside a
-// group every target shifts from its own base, so a multi-target group (as the
-// front side's page + gradient pair was) moves as a body without losing its
-// internal contrast
+// Now aimed at the bottom ("???") side: the accent the interference band and bar
+// tint derive from, the terminal color the back strips share, the chromatic split
+// pair driving both the terminal RGB flashes and the band fringes, and the page
+// backdrop behind the cube (its own --color-page-bottom, split off the shared
+// ink). Inside a group every target shifts from its own base, so a multi-target
+// group (as the front side's page + gradient pair was) moves as a body without
+// losing its internal contrast
 const TUNE_GROUPS: readonly TuneGroup[] = [
   {
-    id: 'face',
-    label: 'Грань: бумага',
+    id: 'band',
+    label: 'Полоса: акцент',
     targets: [
       {
-        variable: '--color-back-paper',
-        label: 'paper',
-        baseHex: '#fdf34b',
+        variable: '--color-accent-bottom',
+        label: 'accent',
+        baseHex: '#123a3a',
+      },
+    ],
+  },
+  {
+    id: 'terminal',
+    label: 'Терминал/стрипы',
+    targets: [
+      {
+        variable: '--color-terminal',
+        label: 'terminal',
+        baseHex: '#c25154',
+      },
+    ],
+  },
+  {
+    id: 'splitCold',
+    label: 'Сплит: холодный',
+    targets: [
+      {
+        variable: '--color-split-cold',
+        label: 'cold',
+        baseHex: '#4eccf3',
+      },
+    ],
+  },
+  {
+    id: 'splitWarm',
+    label: 'Сплит: тёплый',
+    targets: [
+      {
+        variable: '--color-split-warm',
+        label: 'warm',
+        baseHex: '#ff4eab',
       },
     ],
   },
@@ -139,20 +174,9 @@ const TUNE_GROUPS: readonly TuneGroup[] = [
     label: 'Фон страницы',
     targets: [
       {
-        variable: '--color-page-back',
+        variable: '--color-page-bottom',
         label: 'page',
-        baseHex: '#95efff',
-      },
-    ],
-  },
-  {
-    id: 'checkers',
-    label: 'Шашечки',
-    targets: [
-      {
-        variable: '--color-accent-back',
-        label: 'accent',
-        baseHex: '#ffb5ba',
+        baseHex: '#04100f',
       },
     ],
   },
@@ -247,17 +271,27 @@ const shiftHex = (baseHex: string, shift: ShiftState): string => {
 };
 
 const createInitialShifts = (): Record<GroupIdType, ShiftState> => ({
-  face: {
+  band: {
+    hue: 0,
+    saturation: 0,
+    lightness: 0,
+  },
+  terminal: {
+    hue: 0,
+    saturation: 0,
+    lightness: 0,
+  },
+  splitCold: {
+    hue: 0,
+    saturation: 0,
+    lightness: 0,
+  },
+  splitWarm: {
     hue: 0,
     saturation: 0,
     lightness: 0,
   },
   page: {
-    hue: 0,
-    saturation: 0,
-    lightness: 0,
-  },
-  checkers: {
     hue: 0,
     saturation: 0,
     lightness: 0,

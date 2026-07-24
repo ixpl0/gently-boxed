@@ -12,11 +12,12 @@
   /* The palette's single source of truth: every shared color is defined once here,
      and components either consume the var directly or derive alpha/tint variants
      via relative color syntax and color-mix(). Plain #fff stays inline */
-  --color-ink: #1b3964; /* dark ink typography; doubles as the base page background */
+  --color-ink: #1b3964; /* dark ink typography; doubles as the dark sides' page backdrop */
+  --color-page-base: #0d0d0d; /* the body base every side sits on — what the bottom warp's edge gaps reveal */
   --color-page-front: #c05667; /* page backdrop behind the front side */
   --color-page-back: #95efff; /* the pale aqua pool behind the back side */
   --color-text-muted: #b4bdcf; /* secondary text on the dark card faces */
-  --color-terminal: #b9a8d6; /* the bottom side's terminal text and glitch-strip tint */
+  --color-terminal: #c25154; /* the bottom side's terminal text and glitch-strip tint */
   --color-accent-front: #f7abbf;
   --color-front-corner: #bf5368; /* the darkened corners of the front poster gradient */
   --color-meteor: #44fbff; /* the front meteor streaks and the light they cast on the cube */
@@ -26,7 +27,10 @@
   --color-accent-left: #af8a4b;
   --color-accent-right: #4f9e66;
   --color-accent-top: #45939c;
-  --color-accent-bottom: #7867b0;
+  --color-accent-bottom: #123a3a;
+  --color-page-bottom: #04100f; /* the bottom side's page backdrop, split off the shared ink so it tunes alone */
+  --color-split-cold: #4eccf3; /* the glitch side's chromatic split pair: terminal RGB flashes */
+  --color-split-warm: #ff4eab; /* and the interference band's fringes share it */
 }
 
 html,
@@ -41,5 +45,5 @@ body {
   overflow: hidden;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
-  background-color: var(--color-ink);
+  background-color: var(--color-page-base);
 }

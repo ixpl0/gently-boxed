@@ -1,7 +1,10 @@
 <template>
   <div
     class="main-page"
-    :class="{ 'frame-glitch': isFrameGlitchActive && side === 'bottom' }"
+    :class="{
+      'frame-glitch': isFrameGlitchActive && side === 'bottom',
+      'band-warp': isBandWarpActive && side === 'bottom'
+    }"
     :style="{ '--page-background': SIDE_BACKGROUNDS[side] }"
   >
     <Transition name="sparkles-fade">
@@ -63,10 +66,17 @@
         v-else-if="side === 'bottom'"
         layer="front"
         @frame-glitch="handleFrameGlitch"
+        @band-warp="handleBandWarp"
       />
     </Transition>
 
     <SideNavigation :current-side="side" />
+
+    <!-- TEMPORARY: tuning panels for the bottom side's glitch pass — the palette
+         on the left, the warp/band knobs on the right; unmount both once the
+         picked values are baked back into global.css and GlitchField.vue -->
+    <ColorTuner />
+    <GlitchTuner />
   </div>
 </template>
 
@@ -114,6 +124,15 @@ const isFrameGlitchActive = ref(false);
 
 const handleFrameGlitch = (isActive: boolean): void => {
   isFrameGlitchActive.value = isActive;
+};
+
+// Raised by the front GlitchField once the arrival spin has settled: the page-level
+// warp filter flattens the cube's 3D, so it engages late and drops instantly (via
+// the same side gate) when the cube spins away
+const isBandWarpActive = ref(false);
+
+const handleBandWarp = (isActive: boolean): void => {
+  isBandWarpActive.value = isActive;
 };
 
 // Matches the cube's transform transition in TheCube.vue (and the page background crossfade)
@@ -191,6 +210,17 @@ onBeforeUnmount(() => {
    short burst; the filter def lives inside the front GlitchField instance */
 .main-page.frame-glitch {
   filter: url("#glitch-frame-filter");
+}
+
+/* The interference band's horizontal CRT tear: rows shift only inside the stripe
+   the front GlitchField pins to the band's measured position every frame */
+.main-page.band-warp {
+  filter: url("#interference-warp-filter");
+}
+
+/* A burst landing mid-roll tears the already-warped frame: both filters chain */
+.main-page.band-warp.frame-glitch {
+  filter: url("#interference-warp-filter") url("#glitch-frame-filter");
 }
 
 /* Outgoing background particles dissolve while still blinking, overlapping the
