@@ -138,11 +138,12 @@ defineProps<Props>();
 
 /* The ornament on the pool floor: the water itself is fully transparent — the
    warp shows only through what it bends, so two opposite quadrants of the pool
-   carry a large magenta checkerboard whose straight grid lines wobble. The ink
-   is the side accent raised to the cyan pool's lightness (#4ee5ff ≈ L 0.85 in
-   oklch), so the cells differ from the water in hue alone. Each grid is
-   anchored to the corner that touches the page center, so only whole cells grow
-   outward from the center and cells get cut by the screen edge alone */
+   carry a large checkerboard whose straight grid lines wobble. The ink is the
+   side accent pinned to L 0.85 in oklch — it keeps only the accent's hue and
+   chroma, so retuning the accent recolors the cells without darkening them into
+   a hard graphic against the pale water. Each grid is anchored to the corner
+   that touches the page center, so only whole cells grow outward from the
+   center and cells get cut by the screen edge alone */
 .checker-sector {
   position: absolute;
   background: repeating-conic-gradient(oklch(from var(--color-accent-back) 85% c h) 0% 25%, transparent 25% 50%);

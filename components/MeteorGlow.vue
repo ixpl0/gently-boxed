@@ -7,14 +7,11 @@
     aria-hidden="true"
   >
     <div
-      v-for="(lightSize, index) in lightSizes"
+      v-for="(streakLength, index) in streakLengths"
       :key="`glow-light-${index}`"
       ref="lightElements"
       class="glow-light"
-      :style="{
-        width: `${lightSize.width}px`,
-        height: `${lightSize.height}px`
-      }"
+      :style="{ '--streak-length': `${streakLength}px` }"
     />
   </div>
 </template>
@@ -25,46 +22,33 @@ import {
 } from 'vue';
 import { useMeteorLightSources } from '~/composables/useMeteorLightSources';
 
-interface LightSize {
-  width: number;
-  height: number;
-}
-
 interface HiddenLightFrame {
   isVisible: false;
 }
 
 interface VisibleLightFrame {
   isVisible: true;
-  x: number;
-  y: number;
+  headX: number;
+  headY: number;
   tiltDegrees: number;
-  opacity: number;
+  alpha: number;
 }
 
 type LightFrameType = HiddenLightFrame | VisibleLightFrame;
+
+// This component only measures — where each streak's head is, how bright it burns
+// and whether the face is even facing us. Everything about how the light *looks*
+// (patch size, how far up the tail it sits, the intensity cap, the gradients)
+// lives in the stylesheet below, so retuning the glow never means touching JS
 
 // The screen-to-face mapping below is affine only while the face is screen-parallel:
 // frames where the projected layer rect deviates from its layout size — i.e. mid-spin —
 // hide the lights instead of smearing them across a rotating face
 const FACE_PARALLEL_EPSILON_PX = 0.5;
 
-// Lights ramp in over this window after the cube settles instead of popping; done in
-// JS because a CSS opacity fade on the layer would isolate the screen blending
+// Lights ramp in over this window after the cube settles instead of popping; the ramp
+// stays in JS because a CSS opacity fade on the layer would isolate the screen blending
 const GLOW_FADE_IN_MS = 800;
-
-// The lit patch relative to its meteor's streak length: an ellipse elongated along
-// the flight axis, wide enough to read as a pool of light rather than a stripe
-const GLOW_LENGTH_RATIO = 1.2;
-const GLOW_WIDTH_RATIO = 0.55;
-
-// How far back up the tail (as a share of streak length) the patch center sits from
-// the head: the streak glows from the head through the lower tail, not at a point
-const GLOW_HEAD_BACKSET_RATIO = 0.18;
-
-// Global intensity cap multiplied into every written opacity: the cast light should
-// read as a soft passing wash over the poster, not a spotlight
-const GLOW_PEAK_OPACITY = 0.4;
 
 const FALLBACK_STREAK_LENGTH_PX = 380;
 const DEGREES_TO_RADIANS = Math.PI / 180;
@@ -73,7 +57,7 @@ const { sources } = useMeteorLightSources();
 
 const glowLayer = ref<HTMLElement>();
 const lightElements = ref<HTMLElement[]>([]);
-const lightSizes = ref<LightSize[]>([]);
+const streakLengths = ref<number[]>([]);
 
 let settledAtTimestamp: number | undefined;
 let frameId: number | undefined;
@@ -84,22 +68,15 @@ const readStreakLength = (meteorElement: HTMLElement): number => {
   return Number.isFinite(parsedLength) ? parsedLength : FALLBACK_STREAK_LENGTH_PX;
 };
 
-// Patch sizes are static per meteor (respawns only re-randomise lane and tilt),
-// so they are resolved once per publication instead of on every frame
+// Each streak's length is static (respawns only re-randomise lane and tilt), so it is
+// read once per publication and handed to CSS, which sizes the patch off it
 watch(sources, (nextSources) => {
-  lightSizes.value = nextSources.map((meteorElement) => {
-    const streakLength = readStreakLength(meteorElement);
-
-    return {
-      width: streakLength * GLOW_WIDTH_RATIO,
-      height: streakLength * GLOW_LENGTH_RATIO,
-    };
-  });
+  streakLengths.value = nextSources.map((meteorElement) => readStreakLength(meteorElement));
 }, { immediate: true });
 
 const computeLightFrame = (
   meteorElement: HTMLElement,
-  lightSize: LightSize,
+  streakLength: number,
   layerRect: DOMRect,
   faceSize: number,
 ): LightFrameType => {
@@ -111,21 +88,23 @@ const computeLightFrame = (
   }
 
   const meteorRect = meteorElement.getBoundingClientRect();
-  const streakLength = readStreakLength(meteorElement);
   const tiltSin = Math.sin(tiltDegrees * DEGREES_TO_RADIANS);
   const tiltCos = Math.cos(tiltDegrees * DEGREES_TO_RADIANS);
 
   // The rect center is the streak's midpoint (it rotates about its own center), and
   // CSS clockwise rotation carries the head — the streak's bottom end — to
-  // center + (length / 2) · (−sin θ, cos θ); the patch then backs off up the tail
-  const anchorOffset = streakLength * (0.5 - GLOW_HEAD_BACKSET_RATIO);
+  // center + (length / 2) · (−sin θ, cos θ). The patch is anchored on that head;
+  // backing it off up the tail is CSS's job, in the streak's own rotated axes
+  const headOffset = streakLength / 2;
   const scaleToLocal = faceSize / layerRect.width;
-  const anchorX = (meteorRect.left + meteorRect.width / 2 - tiltSin * anchorOffset - layerRect.left) * scaleToLocal;
-  const anchorY = (meteorRect.top + meteorRect.height / 2 + tiltCos * anchorOffset - layerRect.top) * scaleToLocal;
+  const headX = (meteorRect.left + meteorRect.width / 2 - tiltSin * headOffset - layerRect.left) * scaleToLocal;
+  const headY = (meteorRect.top + meteorRect.height / 2 + tiltCos * headOffset - layerRect.top) * scaleToLocal;
 
-  const cullMargin = lightSize.height / 2;
-  const isOnFace = anchorX > -cullMargin && anchorX < faceSize + cullMargin
-    && anchorY > -cullMargin && anchorY < faceSize + cullMargin;
+  // One streak length of slack covers any patch the stylesheet can reasonably size:
+  // its own backset plus half its height stay well inside that, so culling never
+  // has to know the ratios CSS uses
+  const isOnFace = headX > -streakLength && headX < faceSize + streakLength
+    && headY > -streakLength && headY < faceSize + streakLength;
 
   if (!isOnFace) {
     return { isVisible: false };
@@ -133,10 +112,10 @@ const computeLightFrame = (
 
   return {
     isVisible: true,
-    x: anchorX - lightSize.width / 2,
-    y: anchorY - lightSize.height / 2,
+    headX,
+    headY,
     tiltDegrees,
-    opacity: meteorOpacity,
+    alpha: meteorOpacity,
   };
 };
 
@@ -166,7 +145,7 @@ const updateLights = (frameTimestamp: number): void => {
     settledAtTimestamp = undefined;
 
     lightElements.value.forEach((lightElement) => {
-      lightElement.style.opacity = '0';
+      lightElement.style.setProperty('--glow-alpha', '0');
     });
 
     return;
@@ -181,13 +160,17 @@ const updateLights = (frameTimestamp: number): void => {
   // All layout reads happen before any style write, so a frame never forces a
   // second style/layout pass
   const lightFrames = sources.value.map((meteorElement, index): LightFrameType => {
-    const lightSize = lightSizes.value[index];
+    const streakLength = streakLengths.value[index];
 
-    return lightSize === undefined
+    return streakLength === undefined
       ? { isVisible: false }
-      : computeLightFrame(meteorElement, lightSize, layerRect, faceSize);
+      : computeLightFrame(meteorElement, streakLength, layerRect, faceSize);
   });
 
+  // Writes are custom properties rather than finished transform/opacity strings: the
+  // stylesheet composes them with its own ratios, so the shape of the light is CSS's
+  // to change. Only transform and opacity are derived from them, so the per-frame
+  // work still ends on the compositor
   lightFrames.forEach((lightFrame, index) => {
     const lightElement = lightElements.value[index];
 
@@ -196,13 +179,15 @@ const updateLights = (frameTimestamp: number): void => {
     }
 
     if (!lightFrame.isVisible) {
-      lightElement.style.opacity = '0';
+      lightElement.style.setProperty('--glow-alpha', '0');
 
       return;
     }
 
-    lightElement.style.opacity = `${lightFrame.opacity * fadeInProgress * GLOW_PEAK_OPACITY}`;
-    lightElement.style.transform = `translate3d(${lightFrame.x}px, ${lightFrame.y}px, 0) rotate(${lightFrame.tiltDegrees}deg)`;
+    lightElement.style.setProperty('--glow-alpha', `${lightFrame.alpha * fadeInProgress}`);
+    lightElement.style.setProperty('--glow-head-x', `${lightFrame.headX}px`);
+    lightElement.style.setProperty('--glow-head-y', `${lightFrame.headY}px`);
+    lightElement.style.setProperty('--glow-tilt', `${lightFrame.tiltDegrees}deg`);
   });
 };
 
@@ -218,7 +203,21 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* Every dial of the cast light lives here — JS only reports where each streak's head
+   is and how bright it burns (--glow-head-x/y, --glow-tilt, --glow-alpha) */
 .meteor-glow {
+  /* The lit patch relative to its meteor's streak length: an ellipse elongated along
+     the flight axis, wide enough to read as a pool of light rather than a stripe */
+  --glow-length-ratio: 1.2;
+  --glow-width-ratio: 0.55;
+
+  /* How far back up the tail the patch center sits from the head, as a share of
+     streak length: the streak glows from the head through the lower tail, not at a point */
+  --glow-backset-ratio: 0.18;
+
+  /* Global intensity cap on every patch: the cast light should read as a soft
+     passing wash over the poster, not a spotlight */
+  --glow-strength: 0.4;
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -227,16 +226,28 @@ onBeforeUnmount(() => {
 
 /* One soft patch per front meteor: a hot near-white core under the streak head inside
    a broader colored wash along the tail; screen-blended so it lightens the poster
-   gradient and the ink typography the way real light would. Only transform/opacity
-   ever change per frame, so updates stay compositor-only */
+   gradient and the ink typography the way real light would. The transform reads
+   right to left: back off up the tail in the streak's own rotated axes, turn with the
+   streak, center the patch on its anchor, then move that anchor to the head. Only
+   transform and opacity are animated, so updates stay compositor-only */
 .glow-light {
   --glow-core-color: color-mix(in srgb, var(--color-meteor) 45%, #fff 55%);
+
+  /* Fallbacks for the frames before JS has measured anything: an unsized, dark patch */
+  --streak-length: 0;
+  --glow-head-x: 0;
+  --glow-head-y: 0;
+  --glow-tilt: 0deg;
+  --glow-alpha: 0;
   position: absolute;
   top: 0;
   left: 0;
+  width: calc(var(--streak-length) * var(--glow-width-ratio));
+  height: calc(var(--streak-length) * var(--glow-length-ratio));
   background: radial-gradient(40% 26% at 50% 66%, rgb(from var(--glow-core-color) r g b / 60%) 0%, rgb(from var(--glow-core-color) r g b / 0%) 100%), radial-gradient(50% 48% at 50% 52%, rgb(from var(--color-meteor) r g b / 28%) 0%, rgb(from var(--color-meteor) r g b / 0%) 78%);
   mix-blend-mode: screen;
-  opacity: 0;
+  opacity: calc(var(--glow-alpha) * var(--glow-strength));
+  transform: translate3d(var(--glow-head-x), var(--glow-head-y), 0) translate(-50%, -50%) rotate(var(--glow-tilt)) translateY(calc(var(--streak-length) * var(--glow-backset-ratio) * -1));
   will-change: transform, opacity;
   pointer-events: none;
 }

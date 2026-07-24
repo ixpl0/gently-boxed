@@ -81,7 +81,7 @@ import {
   computed, onBeforeUnmount, onMounted, ref, watchEffect,
 } from 'vue';
 
-type GroupIdType = 'background' | 'text' | 'meteors';
+type GroupIdType = 'face' | 'page' | 'checkers';
 
 type ChannelType = 'hue' | 'saturation' | 'lightness';
 
@@ -115,48 +115,44 @@ interface HslColor {
 // the deltas/result hexes off a screenshot and bakes them back into the palette.
 // Base hexes must mirror the current :root palette in assets/css/global.css; the
 // panel overrides the same variables inline on <html>, so every var()-derived
-// color follows live
+// color follows live.
+//
+// Left aimed at the back ("How I work") side: the paper the face is printed on,
+// the water behind the cube and the ink the checkers are drawn with. Inside a
+// group every target shifts from its own base, so a multi-target group (as the
+// front side's page + gradient pair was) moves as a body without losing its
+// internal contrast
 const TUNE_GROUPS: readonly TuneGroup[] = [
   {
-    id: 'background',
-    label: 'Фон: страница + грань',
+    id: 'face',
+    label: 'Грань: бумага',
     targets: [
       {
-        variable: '--color-page-front',
+        variable: '--color-back-paper',
+        label: 'paper',
+        baseHex: '#fdf34b',
+      },
+    ],
+  },
+  {
+    id: 'page',
+    label: 'Фон страницы',
+    targets: [
+      {
+        variable: '--color-page-back',
         label: 'page',
-        baseHex: '#a8455f',
+        baseHex: '#95efff',
       },
+    ],
+  },
+  {
+    id: 'checkers',
+    label: 'Шашечки',
+    targets: [
       {
-        variable: '--color-accent-front',
+        variable: '--color-accent-back',
         label: 'accent',
-        baseHex: '#f188ae',
-      },
-      {
-        variable: '--color-front-corner',
-        label: 'corner',
-        baseHex: '#a54461',
-      },
-    ],
-  },
-  {
-    id: 'text',
-    label: 'Текст',
-    targets: [
-      {
-        variable: '--color-ink',
-        label: 'ink',
-        baseHex: '#3c3772',
-      },
-    ],
-  },
-  {
-    id: 'meteors',
-    label: 'Метеоры',
-    targets: [
-      {
-        variable: '--color-meteor',
-        label: 'meteor',
-        baseHex: '#07ccff',
+        baseHex: '#ffb5ba',
       },
     ],
   },
@@ -251,17 +247,17 @@ const shiftHex = (baseHex: string, shift: ShiftState): string => {
 };
 
 const createInitialShifts = (): Record<GroupIdType, ShiftState> => ({
-  background: {
+  face: {
     hue: 0,
     saturation: 0,
     lightness: 0,
   },
-  text: {
+  page: {
     hue: 0,
     saturation: 0,
     lightness: 0,
   },
-  meteors: {
+  checkers: {
     hue: 0,
     saturation: 0,
     lightness: 0,

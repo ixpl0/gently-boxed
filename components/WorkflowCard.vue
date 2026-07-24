@@ -1,8 +1,8 @@
 <template>
   <div class="workflow-card">
     <h2 class="headline">
-      <span class="headline-line">How I</span>
-      <span class="headline-line">work</span>
+      <span class="headline-line" data-text="How I">How I</span>
+      <span class="headline-line" data-text="work">work</span>
     </h2>
 
     <div class="principles">
@@ -87,15 +87,42 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
   text-transform: uppercase;
 }
 
-/* Misregistered plates: the cyan and magenta passes sit slightly off the key
-   plate and slowly swim, like a press losing registration in the water (the
-   yellow pass is there too — invisible on the yellow paper by nature) */
+/* Misregistered plates: the cyan and magenta passes are copies of the line laid
+   over it, orbiting the key plate from opposite sides of the circle like a press
+   whose registration keeps turning (the yellow pass is there too — invisible on
+   the yellow paper by nature). They are real elements rather than a text-shadow
+   pair because only transforms interpolate smoothly: an orbit built from shadow
+   offsets has to step between keyframes, and the corners of that polygon read as
+   a stutter at this slow pace. Each line runs a quarter turn apart */
 .headline-line {
-  animation: misprint-swim 8s ease-in-out infinite alternate;
+  --orbit-phase: 0s;
+  position: relative;
+  z-index: 0;
 }
 
 .headline-line:last-child {
-  animation-delay: -4s;
+  --orbit-phase: -1.6s;
+}
+
+.headline-line::before,
+.headline-line::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  white-space: nowrap;
+  animation: misprint-orbit 6.4s linear infinite;
+  animation-delay: var(--orbit-phase);
+  content: attr(data-text);
+}
+
+.headline-line::before {
+  color: rgb(from var(--color-back-plate) r g b / 70%);
+}
+
+.headline-line::after {
+  color: rgb(from var(--color-accent-back) r g b / 65%);
+  animation-delay: calc(var(--orbit-phase) - 3.2s);
 }
 
 .principles {
@@ -160,13 +187,16 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
   opacity: 0.6;
 }
 
-@keyframes misprint-swim {
-  0% {
-    text-shadow: 3px 2px 0 rgb(from var(--color-back-plate) r g b / 70%), -3px -1px 0 rgb(from var(--color-accent-back) r g b / 65%);
+/* One true circle: spin the copy around the line's center, push it out by the
+   4px misregistration, then counter-spin it so the letters stay upright while
+   their center travels the orbit */
+@keyframes misprint-orbit {
+  from {
+    transform: rotate(0deg) translateX(4px) rotate(0deg);
   }
 
-  100% {
-    text-shadow: 2px 3px 0 rgb(from var(--color-back-plate) r g b / 70%), -2px -3px 0 rgb(from var(--color-accent-back) r g b / 65%);
+  to {
+    transform: rotate(360deg) translateX(4px) rotate(-360deg);
   }
 }
 </style>
