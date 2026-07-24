@@ -32,15 +32,6 @@
         />
 
         <div class="registration-mark" />
-
-        <div class="color-bar">
-          <span
-            v-for="cell in COLOR_BAR_CELLS"
-            :key="cell"
-            class="color-cell"
-            :data-cell="cell"
-          />
-        </div>
       </div>
     </div>
 
@@ -116,10 +107,6 @@ interface Props {
 }
 
 const SHEET_CORNERS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
-
-// The proof strip at the sheet's bottom edge: the three process inks, the key
-// plate and their halftone tints, like the color bar on a real print sheet
-const COLOR_BAR_CELLS = ['cyan', 'magenta', 'yellow', 'key', 'cyan-tint', 'magenta-tint', 'yellow-tint'] as const;
 
 defineProps<Props>();
 </script>
@@ -266,49 +253,6 @@ defineProps<Props>();
   height: 24px;
   background: var(--color-ink);
   content: "";
-}
-
-.color-bar {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  display: flex;
-  gap: 3px;
-  opacity: 0.85;
-  transform: translateX(-50%);
-}
-
-.color-cell {
-  width: 9px;
-  height: 9px;
-}
-
-.color-cell[data-cell="cyan"] {
-  background: var(--color-back-plate);
-}
-
-.color-cell[data-cell="magenta"] {
-  background: var(--color-accent-back);
-}
-
-.color-cell[data-cell="yellow"] {
-  background: var(--color-back-paper);
-}
-
-.color-cell[data-cell="key"] {
-  background: var(--color-ink);
-}
-
-.color-cell[data-cell="cyan-tint"] {
-  background: rgb(from var(--color-back-plate) r g b / 45%);
-}
-
-.color-cell[data-cell="magenta-tint"] {
-  background: rgb(from var(--color-accent-back) r g b / 45%);
-}
-
-.color-cell[data-cell="yellow-tint"] {
-  background: rgb(from var(--color-back-paper) r g b / 45%);
 }
 
 .warp-filter-defs {

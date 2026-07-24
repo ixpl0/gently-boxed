@@ -36,10 +36,8 @@
           class="side left"
           :inert="side !== 'left'"
         >
-          <SparklesSparkles
-            v-if="side === 'left'"
-            type="plus"
-          />
+          <!-- No face sparkles here: the left side's ambience is the page-level
+               RetroDrive horizon rolling its grid behind the cube -->
           <slot name="left" />
         </div>
 
@@ -181,9 +179,13 @@ defineProps<{
     transform: rotateY(180deg) rotateZ(90deg) translateZ(250px);
   }
 
+  /* The left is the retrowave exception: a dusk gradient falling toward the
+     neon horizon the page-level RetroDrive paints behind the cube; kept dark
+     and calm so the chrome title and the neon links stay readable */
   &.left {
     --side-accent: var(--color-accent-left);
-    --surface-color: oklch(from var(--side-accent) 30% calc(c * 0.35) h);
+    --surface-color: color-mix(in oklab, var(--color-page-left) 72%, var(--color-accent-left) 28%);
+    background-image: linear-gradient(180deg, color-mix(in oklab, var(--color-page-left) 84%, #000 16%) 0%, color-mix(in oklab, var(--color-page-left) 62%, var(--color-accent-left) 38%) 100%);
     transform: rotateY(-90deg) rotateZ(180deg) translateZ(250px);
   }
 

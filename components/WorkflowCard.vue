@@ -37,7 +37,8 @@
 <script setup lang="ts">
 // Each principle is "printed" by one plate of the side's CMYK set; the swatch
 // before its title carries the plate's ink (yellow would vanish on the yellow
-// paper, so the third principle takes the key plate instead)
+// paper, so the third principle takes the key plate instead; the cyan swatch
+// borrows the page pool color so it stays tied to the scene's actual cyan)
 type PrintPlateType = 'cyan' | 'magenta' | 'key';
 
 interface WorkflowPrinciple {
@@ -153,7 +154,7 @@ const TOOLS = ['Claude Code', 'MCP', 'Evals', 'TypeScript'];
 }
 
 .principle-title[data-plate="cyan"] {
-  --plate-color: var(--color-back-plate);
+  --plate-color: var(--color-page-back);
 }
 
 .principle-title[data-plate="magenta"] {

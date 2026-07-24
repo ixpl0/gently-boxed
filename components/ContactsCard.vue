@@ -1,6 +1,14 @@
 <template>
   <div class="contacts-card">
-    <UiTitle>Contacts</UiTitle>
+    <!-- The retrowave lockup: a chrome display headline crossed by a neon
+         script tagline, the genre's canonical title pairing -->
+    <div class="title-lockup">
+      <h2 class="chrome-title">
+        Contacts
+      </h2>
+
+      <span class="script-tagline">get in touch</span>
+    </div>
 
     <div class="links">
       <a
@@ -89,29 +97,76 @@ const opensInNewTab = (href: string): boolean => !href.startsWith('mailto:');
   transform-style: preserve-3d;
 }
 
+.title-lockup {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* The chrome material: an airbrushed sky-to-steel gradient clipped into the
+   glyphs, with the genre's hard horizon line cutting through mid-letter. The
+   stops are the material itself, not palette colors — tuning the side recolors
+   the scene around the chrome, never the chrome */
+.chrome-title {
+  margin: 0;
+  font-family: var(--font-chrome);
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background-image: linear-gradient(180deg, #eaf7ff 0%, #9fd8ff 30%, #eaf9ff 44%, #23458c 50%, #cdeeff 54%, #6d95d6 72%, #1d2a55 100%);
+  background-clip: text;
+  filter: drop-shadow(0 0 14px rgb(from var(--color-drive-cyan) r g b / 35%));
+  transform: translateZ(var(--elevation-step));
+  -webkit-text-fill-color: transparent;
+}
+
+/* The neon sign hanging over the chrome: hot accent script with a triple-halo
+   glow and a rare double-dip flicker, like a tube with a tired starter */
+.script-tagline {
+  position: absolute;
+  right: -14px;
+  bottom: -30px;
+  color: oklch(from var(--side-accent) 80% c h);
+  font-family: var(--font-script);
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 6px rgb(from var(--side-accent) r g b / 90%), 0 0 20px rgb(from var(--side-accent) r g b / 60%), 0 0 46px rgb(from var(--side-accent) r g b / 35%);
+  transform: rotate(-7deg) translateZ(calc(var(--elevation-step) + 8px));
+  animation: tagline-buzz 9s infinite;
+}
+
 .links {
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-items: start;
-  gap: 18px 56px;
-  margin-top: 28px;
+  gap: 18px 48px;
+  margin-top: 52px;
   transform-style: preserve-3d;
 }
 
-/* A bare text link: no panel, no border — hover answers with an accent tint and a lift */
+/* Neon signage links: cool cyan tubes that answer hover by flipping to the
+   hot accent and lifting, keeping the shared bare-text interaction pattern */
 .contact-link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
-  font-size: 15px;
+  color: oklch(from var(--color-drive-cyan) 88% calc(c * 0.85) h);
+  font-family: var(--font-condensed);
+  font-size: 14px;
   font-weight: 500;
+  letter-spacing: 0.14em;
   text-decoration: none;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgb(from var(--color-drive-cyan) r g b / 55%), 0 0 24px rgb(from var(--color-drive-cyan) r g b / 30%);
   transform: translateZ(var(--elevation-step));
   transition: all 0.2s;
 
   &:hover {
-    color: oklch(from var(--side-accent) 82% calc(c * 0.6) h);
+    color: oklch(from var(--side-accent) 82% c h);
+    text-shadow: 0 0 8px rgb(from var(--side-accent) r g b / 70%), 0 0 26px rgb(from var(--side-accent) r g b / 45%);
     transform: translateZ(calc(var(--elevation-step) + 10px));
   }
 }
@@ -125,5 +180,30 @@ const opensInNewTab = (href: string): boolean => !href.startsWith('mailto:');
 
 .link-label {
   white-space: nowrap;
+}
+
+/* Steady neon with one brief double-dip per cycle — a flicker, not a strobe */
+@keyframes tagline-buzz {
+  0%,
+  92.6%,
+  100% {
+    opacity: 1;
+  }
+
+  93.4% {
+    opacity: 0.55;
+  }
+
+  94.2% {
+    opacity: 0.92;
+  }
+
+  95% {
+    opacity: 0.5;
+  }
+
+  96% {
+    opacity: 1;
+  }
 }
 </style>

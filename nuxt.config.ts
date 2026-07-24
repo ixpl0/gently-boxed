@@ -28,11 +28,12 @@ export default defineNuxtConfig({
           href: 'https://fonts.gstatic.com',
           crossorigin: '',
         },
-        // The poster type pair (Archivo Black + Oswald) for the front side and the
-        // print pair (Bungee + Space Grotesk) for the back side (see --font-* in global.css)
+        // The poster type pair (Archivo Black + Oswald) for the front side, the
+        // print pair (Bungee + Space Grotesk) for the back side and the retrowave
+        // pair (Audiowide + Mr Dafoe) for the left side (see --font-* in global.css)
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bungee&family=Oswald:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Archivo+Black&family=Audiowide&family=Bungee&family=Mr+Dafoe&family=Oswald:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap',
         },
       ],
     },

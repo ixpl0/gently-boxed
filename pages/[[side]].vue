@@ -20,6 +20,7 @@
         v-else-if="side === 'back'"
         layer="page"
       />
+      <RetroDrive v-else-if="side === 'left'" />
       <SparklesSparkles
         v-else
         :key="side"
@@ -30,7 +31,7 @@
 
     <TheCube :side="side">
       <template #front>
-        <ProfileCard @open-contacts="side = 'top'" />
+        <ProfileCard @open-contacts="side = 'left'" />
       </template>
 
       <template #back>
@@ -38,7 +39,7 @@
       </template>
 
       <template #left>
-        <ExperienceCard />
+        <ContactsCard />
       </template>
 
       <template #right>
@@ -46,7 +47,7 @@
       </template>
 
       <template #top>
-        <ContactsCard />
+        <ExperienceCard />
       </template>
 
       <template #bottom>

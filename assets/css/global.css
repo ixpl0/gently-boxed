@@ -9,22 +9,30 @@
   --font-signage: "Bungee", "Arial Black", system-ui, sans-serif;
   --font-grotesk: "Space Grotesk", system-ui, sans-serif;
 
+  /* The left side's retrowave pair, same head: an outrun display face for the
+     chrome headline and a neon-sign script for the tagline */
+  --font-chrome: "Audiowide", "Trebuchet MS", system-ui, sans-serif;
+  --font-script: "Mr Dafoe", "Segoe Script", cursive;
+
   /* The palette's single source of truth: every shared color is defined once here,
      and components either consume the var directly or derive alpha/tint variants
      via relative color syntax and color-mix(). Plain #fff stays inline */
   --color-ink: #1b3964; /* dark ink typography; doubles as the dark sides' page backdrop */
   --color-page-base: #0d0d0d; /* the body base every side sits on — what the bottom warp's edge gaps reveal */
   --color-page-front: #c05667; /* page backdrop behind the front side */
-  --color-page-back: #95efff; /* the pale aqua pool behind the back side */
+  --color-page-back: #2afbff; /* the aqua pool behind the back side */
   --color-text-muted: #b4bdcf; /* secondary text on the dark card faces */
   --color-terminal: #c25154; /* the bottom side's terminal text and glitch-strip tint */
   --color-accent-front: #f7abbf;
   --color-front-corner: #bf5368; /* the darkened corners of the front poster gradient */
   --color-meteor: #44fbff; /* the front meteor streaks and the light they cast on the cube */
-  --color-accent-back: #ffb5ba; /* the back side's warm ink (the CMYK magenta pass); doubles as its accent */
+  --color-accent-back: #ff82a6; /* the back side's warm ink (the CMYK magenta pass); doubles as its accent */
   --color-back-plate: #00d7f2; /* the back side's second CMYK ink plate, printed as process cyan */
-  --color-back-paper: #fdf34b; /* the back side's paper base, doubling as its CMYK yellow plate */
-  --color-accent-left: #af8a4b;
+  --color-back-paper: #fff216; /* the back side's paper base, doubling as its CMYK yellow plate */
+  --color-accent-left: #ff3da5; /* the left side's neon magenta: sun foot, grid lines, script tagline, nav dot */
+  --color-page-left: #170a38; /* the left side's dusk-violet backdrop behind the retrowave horizon */
+  --color-drive-cyan: #33e2ff; /* the road's neon edge lines and the contact links' glow */
+  --color-drive-sun: #ffcf5e; /* the striped sun's gold crown; its foot melts into the left accent */
   --color-accent-right: #4f9e66;
   --color-accent-top: #45939c;
   --color-accent-bottom: #123a3a;

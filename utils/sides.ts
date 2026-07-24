@@ -5,9 +5,9 @@ export type SideType = typeof SIDES[number];
 export const SIDE_LABELS: Record<SideType, string> = {
   front: 'Profile',
   back: 'How I work',
-  left: 'Experience',
+  left: 'Contacts',
   right: 'Projects',
-  top: 'Contacts',
+  top: 'Experience',
   bottom: '???',
 };
 
@@ -55,8 +55,8 @@ export const SIDE_NEIGHBORS: Record<SideType, Record<DirectionType, SideType>> =
 };
 
 // Mirrors the per-side SparklesSparkles types rendered inside TheCube.vue; front,
-// back and bottom carry dedicated ambience components instead of sparkles and
-// keep placeholder entries only to satisfy the per-side map shape
+// back, left and bottom carry dedicated ambience components instead of sparkles
+// and keep placeholder entries only to satisfy the per-side map shape
 export const SIDE_SPARKLE_TYPES = {
   front: 'star',
   back: 'cross',
@@ -82,7 +82,7 @@ export const SIDE_COLORS: Record<SideType, string> = {
 export const SIDE_BACKGROUNDS: Record<SideType, string> = {
   front: 'var(--color-page-front)',
   back: 'var(--color-page-back)',
-  left: 'var(--color-ink)',
+  left: 'var(--color-page-left)',
   right: 'var(--color-ink)',
   top: 'var(--color-ink)',
   bottom: 'var(--color-page-bottom)',
