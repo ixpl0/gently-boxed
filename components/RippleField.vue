@@ -68,10 +68,16 @@
           seed="11"
           result="page-water"
         >
+          <!-- The frequency point orbits a closed convex loop in (fx, fy) space
+               instead of ping-ponging between two values: on a loop the morph's
+               direction only ever turns, so there is no extreme where the sway
+               visibly stalls and reverses. keyTimes match the segment lengths,
+               keeping the orbit speed constant through the corners -->
           <animate
             attributeName="baseFrequency"
             dur="24s"
-            values="0.0055 0.009;0.0075 0.012;0.0055 0.009"
+            values="0.0055 0.009;0.0068 0.0092;0.0075 0.0105;0.0069 0.0118;0.0057 0.0112;0.0055 0.009"
+            keyTimes="0;0.17;0.36;0.54;0.72;1"
             repeatCount="indefinite"
           />
         </feTurbulence>
@@ -82,10 +88,18 @@
           xChannelSelector="R"
           yChannelSelector="G"
         >
+          <!-- The swell amplitude is one-dimensional, so it has to come back;
+               the sine-like splines bring its velocity to zero at both ends,
+               so the turnaround reads as the water settling rather than
+               bouncing off a wall. 17s against the 24s orbit keeps the two
+               cycles sliding out of phase (they only realign every 408s) -->
           <animate
             attributeName="scale"
             dur="17s"
             values="55;90;55"
+            keyTimes="0;0.5;1"
+            calcMode="spline"
+            keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
             repeatCount="indefinite"
           />
         </feDisplacementMap>
